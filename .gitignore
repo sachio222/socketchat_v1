@@ -1,2 +1,4 @@
 *.key
+*.pyc
+encryption/__pycache__/
 __pycache__/
