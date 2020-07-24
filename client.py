@@ -9,6 +9,18 @@ BUFFSIZE = 2048
 CURSOR_UP_ONE = '\x1b[1A'
 ERASE_LINE = '\x1b[2K'
 
+sound_flag = True
+
+
+class Chime:
+    def __init__(self):
+        self.muted = False
+
+    def play(self):
+        if not self.muted:
+            sys.stdout.write("\a")
+        else:
+            return
 
 def welcome_msg():
 
@@ -30,9 +42,9 @@ def receive():
             incoming = client.recv(BUFFSIZE)
             incoming = incoming.decode()
             sys.stdout.write(ERASE_LINE)
-            
+
             # Bell
-            sys.stdout.write("\a")
+            chime.play()
             print(f"\r\x1b[1;33;40m{incoming}\x1b[0m")
             
         except OSError:
@@ -41,6 +53,11 @@ def receive():
 
 def send(msg=''):
     while msg != 'exit()':
+        if msg == 'mute()':
+            chime.muted = True
+        elif msg == 'unmute()':
+            chime.muted = False
+
         msg = input('')
         client.send(msg.encode(ENC))
 
@@ -48,6 +65,7 @@ def send(msg=''):
     print('Disconnected.')
     exit()
 
+chime = Chime()
 
 if __name__ == '__main__':
 
