@@ -27,6 +27,8 @@ You don't need messenger. **Secure CLI Socket Chat** connects you directly to a 
 2. Open client.py, connect to defined port.
 3. Chat.
 
+*Note: in the unencrypted chat, you only need 2 files. ```server.py``` and ```client.py```. Everything else is for the encrypted chat. 
+
 #### Encrypted chat
 1. Spin up server.py same as above. 
 2. Run keygen-fernet.py to generate secret.key
