@@ -30,6 +30,8 @@ def receive():
             incoming = client.recv(BUFFSIZE)
             incoming = incoming.decode()
             sys.stdout.write(ERASE_LINE)
+            
+            # Bell
             sys.stdout.write("\a")
             print(f"\r\x1b[1;33;40m{incoming}\x1b[0m")
             
