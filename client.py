@@ -13,6 +13,7 @@ sound_flag = True
 
 
 class Chime:
+
     def __init__(self):
         self.muted = False
 
@@ -21,6 +22,7 @@ class Chime:
             sys.stdout.write("\a")
         else:
             return
+
 
 def welcome_msg():
 
@@ -46,7 +48,7 @@ def receive():
             # Bell
             chime.play()
             print(f"\r\x1b[1;33;40m{incoming}\x1b[0m")
-            
+
         except OSError:
             break
 
@@ -64,6 +66,7 @@ def send(msg=''):
     client.close()
     print('Disconnected.')
     exit()
+
 
 chime = Chime()
 
