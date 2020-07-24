@@ -3,8 +3,7 @@ import sys
 import socket
 from threading import Thread
 
-ENC = 'utf8'
-BUFFSIZE = 2048
+BUFFSIZE = 4096
 CURSOR_UP_ONE = '\x1b[1A'
 ERASE_LINE = '\x1b[2K'
 
@@ -29,7 +28,7 @@ def welcome_msg():
         if handle:
             break
 
-    client.send(handle.encode(ENC))
+    client.send(handle.encode())
 
     from_server = client.recv(BUFFSIZE)
     print(f"\x1b[4;32;40m{from_server.decode()}\x1b[0m")
@@ -58,7 +57,7 @@ def send(msg=''):
             chime.muted = False
 
         msg = input('')
-        client.send(msg.encode(ENC))
+        client.send(msg.encode())
 
     client.close()
     print('Disconnected.')
