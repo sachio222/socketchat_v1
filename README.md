@@ -3,7 +3,7 @@
 ### Street name: Encryptochat
 ======
 
-You don't need messenger. **Secure CLI Socket Chat** connects you directly to a host server that you set up. Allows you to chat with other terminals on your network, or around the world. The unencrypted server.py requires no additional libraries and is the software size equivalent of a postage stamp. It's so lightweight it will run almost anywhere, even a Raspberry Pi 1! The encrypted version is also very small, but requires the quick pip install of a Python crytograpic package, and is currently using shared key encryption (Fernet). More levels of encryption to come. 
+You don't need messenger. **Secure CLI Socket Chat** connects you directly to a host server that you, or anyonee set up. Allows you to chat with other terminals on your network, or around the world. The unencrypted server.py requires no additional libraries and is the software size equivalent of a postage stamp. It's so lightweight it will run almost anywhere, even a Raspberry Pi 1! The encrypted version is also very small, but requires the quick pip install of a Python crytograpic package, and is currently using shared key encryption (Fernet). More levels of encryption to come. 
 
 ## Features:
 * Secure, client-side encryption/decryption using Fernet cipher (PGP, blowfish coming soon).
@@ -17,6 +17,8 @@ You don't need messenger. **Secure CLI Socket Chat** connects you directly to a 
 * Monitor unencrypted chats on your server.
 * Audio alerts controllable with mute() or unmute().
 * Exit chat with exit().
+
+[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=diamondhawk&url=https://github.com/sachio222/socketchat_v1)
 
 ## Usage
 
@@ -34,7 +36,7 @@ You don't need messenger. **Secure CLI Socket Chat** connects you directly to a 
 
 ## Contributors
 J. Krajewski
-[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=diamondhawk&url=https://github.com/sachio222/socketchat_v1)
+
 
 ### Third party libraries
 https://pypi.org/project/cryptography/
