@@ -1,7 +1,7 @@
 #### seccure-cli-socketchat-python-v1
 Secure CLI Socket Chat
 ======
-You don't need messenger. **Secure CLI Socket Chat** connects you directly to a host server that you set up. Allows you to chat with other terminals on your network, or around the world. The unencrypted server.py requires no additional libraries and is the software size equivalent of a postage stamp. The encrypted version is also very small, but requires the quick pip install of a Python crytograpic package, and currently uses a shared private key (Fernet).
+You don't need messenger. **Secure CLI Socket Chat** connects you directly to a host server that you set up. Allows you to chat with other terminals on your network, or around the world. The unencrypted server.py requires no additional libraries and is the software size equivalent of a postage stamp. It's so lightweight it will run almost anywhere, even a Raspberry Pi 1! The encrypted version is also very small, but requires the quick pip install of a Python crytograpic package, and is currently using shared key encryption (Fernet). More levels of encryption to come. 
 
 ## Features:
 * Secure, client-side encryption/decryption using Fernet cipher (PGP, blowfish coming soon).
