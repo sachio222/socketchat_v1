@@ -27,30 +27,21 @@ You don't need messenger. **Secure CLI Socket Chat** connects you directly to ho
 3. Share this SAME secret.key with the person you want to be able to read your messages, and have them place it in their socketchat folder. 
 
 ## Contributors
-
-### Contributors on GitHub
-* [Contributors](https://github.com/username/sw-name/graphs/contributors)
-
-### Translations
-* [Transifex](https://www.transifex.com/projects/p/sw-name/)
+J. Krajewski
 
 ### Third party libraries
-* see [LIBRARIES](https://github.com/username/sw-name/blob/master/LIBRARIES.md) files
+https://pypi.org/project/cryptography/
 
 ## License 
 * see [LICENSE](https://github.com/username/sw-name/blob/master/LICENSE.md) file
 
 ## Version 
-* Version X.Y
+* Version 1.0
 
 ## How-to use this code
-* see [INSTRUCTIONS](https://github.com/username/sw-name/blob/master/INSTRUCTIONS.md) file
 
 ## Contact
 #### Developer/Company
-* Homepage: 
-* e-mail: 
-* Twitter: [@twitterhandle](https://twitter.com/twitterhandle "twitterhandle on twitter")
-* other communication/social media
 
-[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=username&url=https://github.com/username/sw-name&title=sw-name&language=&tags=github&category=software) 
+* Twitter: [@jakekrajewski](https://twitter.com/jakekrajewski "@jakekrajewski")
+* Medium: [@Jakekrajewski](https://medium.com/@Jakekrajewski)
