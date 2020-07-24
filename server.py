@@ -1,3 +1,11 @@
+"""SOCKETCHAT by J. Krajewski, 2020, All rights reserved.
+
+-+- Spin up server.py, connect to it with client.py and chat via the cli.
+-+- Works out of the box with Python3. No libraries needed.
+
+For encrypted chat, use sec-client.py (requires addl libraries).
+"""
+
 import socket
 from threading import Thread
 
