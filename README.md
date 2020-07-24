@@ -12,7 +12,9 @@ You don't need messenger. **Secure CLI Socket Chat** connects you directly to a 
 * Customize max client count.
 * Works out of box with Python 3.x, no libraries required (Secure chat requires addl libraries).
 * Tiny filesize footprint and runs with barely any setup.
-* Monitor unencrypted chats on your server. 
+* Monitor unencrypted chats on your server.
+* Audio alerts controllable with mute() or unmute().
+* Exit chat with exit().
 
 ## Usage
 
