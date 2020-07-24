@@ -1,9 +1,6 @@
 """SOCKETCHAT by J. Krajewski, 2020, All rights reserved.
-
--+- Spin up server.py, connect to it with client.py and chat via the cli.
--+- Works out of the box with Python3. No libraries needed.
+Spin up server.py, connect to it with client.py and chat via the cli. 
 """
-
 import os
 import sys
 import socket
