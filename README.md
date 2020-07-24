@@ -31,7 +31,7 @@ You don't need messenger. **Secure CLI Socket Chat** connects you directly to a 
 1. Spin up server.py same as above. 
 2. Run keygen-fernet.py to generate secret.key
 3. Share this SAME secret.key with any person you want to be able to read your messages, and have them place it in their socketchat folder.
-4. Open client.py, connect to defined port. 
+4. Open secc-client.py, connect to defined port. 
 5. Chat.
 
 ## Contributors
