@@ -30,7 +30,6 @@ def receive():
             incoming = incoming.decode()
             sys.stdout.write(ERASE_LINE)
             print(f"\r\x1b[1;33;40m{incoming}\x1b[0m")
-            Thread(target=send).start()
         except OSError:
             break
 
@@ -67,3 +66,5 @@ if __name__ == '__main__':
 
     receive_thread = Thread(target=receive)
     receive_thread.start()
+    send_thread = Thread(target=send)
+    send_thread.start()
