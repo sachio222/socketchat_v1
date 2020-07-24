@@ -67,9 +67,9 @@ def send(msg=''):
             chime.muted = True
         elif msg == 'unmute()':
             chime.muted = False
-        else:
-            msg = input('')
-            client.send(msg.encode())
+        
+        msg = input('')
+        client.send(msg.encode())
 
     # Close on exit()
     client.close()

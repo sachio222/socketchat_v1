@@ -75,10 +75,10 @@ def send(msg=''):
             chime.muted = True
         elif msg == 'unmute()':
             chime.muted = False
-        else:
-            msg = input('')
-            msg = cipher.encrypt(msg)
-            client.send(msg)
+        
+        msg = input('')
+        msg = cipher.encrypt(msg)
+        client.send(msg)
 
     # Close on exit()
     client.close()
