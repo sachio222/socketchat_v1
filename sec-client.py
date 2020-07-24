@@ -81,7 +81,7 @@ def send(msg=''):
 
         msg = input('')
         msg = cipher.encrypt(msg)
-        client.send(msg.encode())
+        client.send(msg)
         
     # Close on exit()
     client.close()
