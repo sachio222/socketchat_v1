@@ -1,9 +1,9 @@
-# seccure-cli-socketchat-python-v1
+#### seccure-cli-socketchat-python-v1
 Secure CLI Socket Chat
 ======
 You don't need messenger. **Secure CLI Socket Chat** connects you direct to host.
 
-#Features:
+### Features:
 * Secure Encryption using Fernet cipher (PGP, blowfish coming soon).
 * Use it on your own LAN to chat between computers, or across the world with friends.
 * Direct message or multiple chat-client connections.
