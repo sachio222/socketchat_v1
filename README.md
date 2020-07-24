@@ -51,7 +51,11 @@ Install using ``` pip install cryptography```
 ## Version 
 * Version 1.0
 
-## How-to use this code
+## Troubleshooting
+Error:
+```socket.gaierror: [Errno 8] nodename nor servname provided, or not known```
+System: Mac
+Solution: [Enable Sharing Permissions, then Disable](https://stackoverflow.com/a/53382881/5369711)
 
 ## Contact
 #### Developer/Company
