@@ -58,11 +58,12 @@ def receive():
             # Clear line when new text comes in (otherwise it'll glitch out.)
             sys.stdout.write(ERASE_LINE)
 
+            # Bell
+            chime.play()
+
             # Display with some sort of colors
             print(f"\r\x1b[1;33;40m{incoming}\x1b[0m")
 
-            # Bell
-            chime.play()
 
         except OSError:
             break
@@ -73,14 +74,10 @@ def send(msg=''):
     while msg != 'exit()':
         if msg == 'mute()':
             chime.muted = True
-            print('Silent mode. Use "unmute()" to turn back on.')
+            print('\x1b[4;32;40m@YO: Silent mode. Turn on sound with unmute().\x1b[0m')
         elif msg == 'unmute()':
             chime.muted = False
-            print('Beep! Turn sound off with "mute()."')
-            
-        msg = input('')
-        msg = cipher.encrypt(msg)
-        client.send(msg)
+            print('\x1b[4;32;40m@YO: B00p! Turn sound off with mute().\x1b[0m')
 
     # Close on exit()
     client.close()
