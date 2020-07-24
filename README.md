@@ -34,6 +34,7 @@ You don't need messenger. **Secure CLI Socket Chat** connects you directly to a 
 
 ## Contributors
 J. Krajewski
+[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=diamondhawk&url=https://github.com/sachio222/socketchat_v1)
 
 ### Third party libraries
 https://pypi.org/project/cryptography/
@@ -51,3 +52,4 @@ https://pypi.org/project/cryptography/
 
 * Twitter: [@jakekrajewski](https://twitter.com/jakekrajewski "@jakekrajewski")
 * Medium: [@Jakekrajewski](https://medium.com/@Jakekrajewski)
+
