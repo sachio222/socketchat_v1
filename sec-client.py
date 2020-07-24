@@ -73,9 +73,11 @@ def send(msg=''):
     while msg != 'exit()':
         if msg == 'mute()':
             chime.muted = True
+            print('Silent mode. Use "unmute()" to turn back on.')
         elif msg == 'unmute()':
             chime.muted = False
-        
+            print('Beep! Turn sound off with "mute()."')
+            
         msg = input('')
         msg = cipher.encrypt(msg)
         client.send(msg)
