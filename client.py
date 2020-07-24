@@ -5,11 +5,8 @@ from threading import Thread
 
 ENC = 'utf8'
 BUFFSIZE = 2048
-
 CURSOR_UP_ONE = '\x1b[1A'
 ERASE_LINE = '\x1b[2K'
-
-sound_flag = True
 
 
 class Chime:
