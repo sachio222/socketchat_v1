@@ -1,28 +1,3 @@
-"""
-import socket
-
-# Create a socket object
-# family: Address Format Internet
-# type: Socket Stream
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# Once a socket exists, we just open and close the connection. 
-
-# Connect to an IP with port, could be URL. 
-sock.connect(('0.0.0.0', 8080))
-
-# Send some data.
-sock.send('Twenty-five bytes to send')
-
-# Receive up to 4096 bytes from a peer
-sock.recv(4096)
-
-# Close the socket connection, no transmission.
-sock.close()
-
-
-"""
-
 import socket
 from threading import Thread
 
@@ -36,50 +11,48 @@ def accept_incoming_connections():
         # Send welcome message.
         client.send(welcome_msg.encode(enc))
 
-        handle = client.recv(BUFFSIZE)
-        handles[client] = handle
+        nick = client.recv(BUFFSIZE)
+        nicks[client] = nick
         addresses[client] = addr
 
         # Announce new guest
-        announce_msg = f"{handle.decode()} is in the house!"
+        announce_msg = f"{nick.decode()} is in the house!"
         broadcast(b'YO', None, announce_msg.encode())
         # from_client = b''
         Thread(target=handle_client, args=(client,)).start()
 
 
 def handle_client(client):
-    # print('all:', addresses)
-    # print(handles)
 
     while True:
         data = client.recv(BUFFSIZE)  # Store incoming as data.
         addr = addresses[client]
-        handle = handles[client]
+        nick = nicks[client]
 
         if not data:
             break
         from_client = data
-        broadcast(handle, addr, from_client)
+        broadcast(nick, addr, from_client)
         # print(f'{addr}: {from_client.decode()}')
-        print(f'@{handle.decode()}: {from_client.decode()}')
+        print(f'@{nick.decode()}: {from_client.decode()}')
     client.close()
-    del handles[client]
+    del nicks[client]
     exit()
     print('Client disconnected.')
 
 
-def broadcast(handle, addr, from_client):
+def broadcast(nick, addr, from_client):
 
-    msg = f'@{handle.decode()}: {from_client.decode()}'
+    msg = f'@{nick.decode()}: {from_client.decode()}'
 
-    for socket in handles:
+    for socket in nicks:
         if socket.getpeername() != addr:
             socket.send(msg.encode(enc))
 
 
 enc = 'utf8'
 addresses = {}
-handles = {}
+nicks = {}
 
 welcome_msg = "\n=+= You're in. Welcome to the underground. =+="
 
