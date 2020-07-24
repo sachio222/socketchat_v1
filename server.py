@@ -69,19 +69,20 @@ if __name__ == '__main__':
     serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Make object
 
     BUFFSIZE = 2048
-    HOST = socket.gethostname()
-    IP = socket.gethostbyname(HOST)
     MAX_CNXN = 5
 
-    print(f'-+- Starting server on host: {HOST}')
-    print(f'-+- Host IP: {IP}')
-    PORT = input('-+- Choose port: ')
-    PORT = int(PORT)
+    host = socket.gethostname()
+    ip = socket.gethostbyname(host)
+
+    print(f'-+- Starting server on host: {host}')
+    print(f'-+- Host IP: {ip}')
+    port = input('-+- Choose port: ')
+    port = int(port)
 
     try:
-        serv.bind((HOST, PORT))  # bind to host as socket server.
+        serv.bind((host, port))  # bind to host as socket server.
     except:
-        serv.bind((HOST, PORT))  # bind to host as socket server.
+        serv.bind((host, port))  # bind to host as socket server.
 
     serv.listen(MAX_CNXN)  # listen for data.
     print("-+- Waiting for connections...")
