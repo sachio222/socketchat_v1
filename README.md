@@ -1,7 +1,7 @@
 #### seccure-cli-socketchat-python-v1
 Secure CLI Socket Chat
 ======
-You don't need messenger. **Secure CLI Socket Chat** connects you directly to host server that you set up. Allows you to chat with other terminals on your network, or around the world. The unencrypted server.py requires no additional libraries and is the software size equivalent of a postage stamp. The encrypted version is also very small, but requires the quick pip install of a Python crytograpic package, and currently uses a shared private key (Fernet).
+You don't need messenger. **Secure CLI Socket Chat** connects you directly to a host server that you set up. Allows you to chat with other terminals on your network, or around the world. The unencrypted server.py requires no additional libraries and is the software size equivalent of a postage stamp. The encrypted version is also very small, but requires the quick pip install of a Python crytograpic package, and currently uses a shared private key (Fernet).
 
 #### Features:
 * Secure, client-side encryption/decryption using Fernet cipher (PGP, blowfish coming soon).
@@ -12,19 +12,21 @@ You don't need messenger. **Secure CLI Socket Chat** connects you directly to ho
 * Customize max client count.
 * Works out of box with Python 3.x, no libraries required (Secure chat requires addl libraries).
 * Tiny filesize footprint and runs with barely any setup.
-* Monitor unencrypted chat on the server. 
+* Monitor unencrypted chats on your server. 
 
 ## Usage
 
 #### No encrypt chat
 1. Spin up server.py on any machine, define port number to listen on. 
-2. For unencrypted chat, open server.py, connect to defined port.
-3. Done.
+2. Open server.py, connect to defined port.
+3. Chat.
 
 ### Encrypted chat
 1. Spin up server.py same as above. 
 2. Run keygen-fernet.py to generate secret.key
-3. Share this SAME secret.key with the person you want to be able to read your messages, and have them place it in their socketchat folder. 
+3. Share this SAME secret.key with any person you want to be able to read your messages, and have them place it in their socketchat folder.
+4. Open server.py, connect to defined port. 
+5. Chat.
 
 ## Contributors
 J. Krajewski
