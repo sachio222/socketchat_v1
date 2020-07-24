@@ -1,10 +1,15 @@
-"""SOCKETCHAT by J. Krajewski, 2020, All rights reserved.
-Spin up server.py, connect to it with client.py and chat via the cli. 
+"""SOCKETCHAT SECURE by J. Krajewski, 2020, All rights reserved.
+
+-+- Spin up server.py, connect to it with sec-client.py and chat via the cli.
+-+- Libraries required.
+
 """
+
 import os
 import sys
 import socket
 from threading import Thread
+from cryptography.fernet import Fernet
 
 BUFFSIZE = 4096  # Upped for encryption
 CURSOR_UP_ONE = '\x1b[1A'
@@ -21,6 +26,44 @@ class Chime:
             sys.stdout.write("\a")
         else:
             return
+
+class Cipher():
+    def __init__(self):
+        #self.generate_key()
+        self.key = self.load_key()
+        self.f = Fernet(self.key)
+
+    def generate_key(self):
+        self.key = Fernet.generate_key()
+        with open('secret.key', 'wb') as key_file:
+            key_file.write(key)
+
+    def load_key(self):
+        return open('secret.key', 'rb').read()
+
+    def encrypt(self, msg):
+        msg = msg.encode() # byte encode
+        enc_msg = self.f.encrypt(msg)
+        return enc_msg
+
+    def decrypt(self, msg):
+        dec_msg = self.f.decrypt(msg)
+        return dec_msg
+
+    def split(self, raw_msg):
+        """Separates message from raw_msg from server.
+
+        Returns:
+            handle: (str) user name
+            cipher_msg: (bytes)
+        """
+
+        SEPARATOR = ': '
+        raw_msg = msg.decode() # to str
+        _split = msg.split(SEPARATOR)
+        handle = _split[0]
+        cipher_msg = _split[1].encode() # to bytes
+        return handle, cipher_msg
 
 
 def welcome_msg():
@@ -42,7 +85,14 @@ def receive():
     while True:
         try:
             incoming = client.recv(BUFFSIZE)
-            incoming = incoming.decode()
+            
+            handle, cip_msg = cipher.split(incoming)
+
+            try:
+                plain_text = cipher.decrypt(cip_msg).decode() # To str
+                incoming = f'{handle}{plain_text}' 
+            except:
+                incoming = incoming.decode() # Fallback
 
             # Clear line when new text comes in (otherwise it'll glitch out.)
             sys.stdout.write(ERASE_LINE)
@@ -66,6 +116,7 @@ def send(msg=''):
             chime.muted = False
         else:
             msg = input('')
+            msg = cipher.encrypt(msg)
             client.send(msg.encode())
 
     # Close on exit()
@@ -76,6 +127,7 @@ def send(msg=''):
 
 # Instantiate sound
 chime = Chime()
+cipher = Cipher()
 
 if __name__ == '__main__':
 
