@@ -20,7 +20,7 @@ def welcome_msg():
     client.send(handle.encode(ENC))
 
     from_server = client.recv(BUFFSIZE)
-    print(f"\x1b[4;32;40m{from_server.decode()}\x1b[0m\n")
+    print(f"\x1b[4;32;40m{from_server.decode()}\x1b[0m")
 
 
 def receive():
