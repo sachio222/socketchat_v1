@@ -41,6 +41,8 @@ J. Krajewski
 ### Third party libraries
 https://pypi.org/project/cryptography/
 
+Install using ``` pip install cryptography```
+
 ## License 
 * see [LICENSE](https://github.com/username/sw-name/blob/master/LICENSE.md) file
 
