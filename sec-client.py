@@ -80,6 +80,7 @@ def send(msg=''):
             print('\x1b[4;32;40m@YO: B00p! Turn sound off with mute().\x1b[0m')
 
         msg = input('')
+        msg = cipher.encrypt(msg)
         client.send(msg.encode())
         
     # Close on exit()
