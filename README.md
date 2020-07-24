@@ -22,14 +22,14 @@ You don't need messenger. **Secure CLI Socket Chat** connects you directly to a 
 
 #### No encrypt chat
 1. Spin up server.py on any machine, define port number to listen on. 
-2. Open server.py, connect to defined port.
+2. Open client.py, connect to defined port.
 3. Chat.
 
 #### Encrypted chat
 1. Spin up server.py same as above. 
 2. Run keygen-fernet.py to generate secret.key
 3. Share this SAME secret.key with any person you want to be able to read your messages, and have them place it in their socketchat folder.
-4. Open server.py, connect to defined port. 
+4. Open client.py, connect to defined port. 
 5. Chat.
 
 ## Contributors
