@@ -44,7 +44,7 @@ class Server():
                 pkt_re = re.search(r"\d+\s(?=received)", output).group(0)
 
                 reply = f'P0NG! Roundtrip: {t}ms | Sent: {pkt_tx} | Rec: {pkt_re} | From: {ip}'
-                
+
             except:
                 reply = "P0NG aint working right now. Let us know if it keeps screwing up."
 
@@ -53,7 +53,7 @@ class Server():
 
         return reply
 
-
-host = 'www.meter.net'
-ping_server = Server(host)
-ping_server.ping(host)
+## For testing
+# host = 'www.meter.net'
+# ping_server = Server(host)
+# ping_server.ping(host)
