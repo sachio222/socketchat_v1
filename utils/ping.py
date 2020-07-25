@@ -41,10 +41,13 @@ class Server():
             pkt_tx = re.search(r"\d+\s(?=packets)", output).group(0)
             pkt_re = re.search(r"\d+\s(?=received)", output).group(0)
 
-            return ip, t, pkt_tx, pkt_re
-            
+            reply = f'P0NG! {t}ms | Sent: {pkt_tx} | Rec: {pkt_re} | From: {ip}'
+
         else:
-            print(f'{host} is down!')
+            reply = f'{host} is down!'
+
+        return reply
+
 
 
 # ping_server.ping(host)

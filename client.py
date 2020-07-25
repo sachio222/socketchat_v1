@@ -74,12 +74,8 @@ def send(msg=''):
             print('\x1b[4;32;40m@YO: B00p! Turn sound off with mute().\x1b[0m')
         
         elif msg.lower() == 'ping':
-            try:
-                ip, time, xmt, rec, = pngsrvr.ping()
-                print(f'\x1b[4;32;40m@YO: P0NG! {time}ms.|Sent: {xmt}|Rec: {rec}|From: {ip}\x1b[0m')
-
-            except:
-                print('\x1b[4;32;40m@YO: Server down. Disconnecting....\x1b[0m')
+            reply = pngsrvr.ping()
+            print(f'\x1b[4;32;40m@YO: {reply}\x1b[0m')
 
         msg = input('')
         client.send(msg.encode())
