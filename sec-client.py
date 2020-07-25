@@ -109,7 +109,7 @@ def send(msg=''):
         elif msg.lower() == 'ping':
             try:
                 ip, time, xmt, rec, = pngsrvr.ping()
-                print(f'\x1b[4;32;40m@YO: P0NG! {time}ms. Sent: {xmt} | Rec: {rec} | From: {ip}\x1b[0m')
+                print(f'\x1b[4;32;40m@YO: P0NG! {time}ms.|Sent: {xmt}|Rec: {rec}|From: {ip}\x1b[0m')
 
             except:
                 print('\x1b[4;32;40m@YO: Server down. Disconnecting....\x1b[0m')
