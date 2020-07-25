@@ -22,7 +22,7 @@ You don't need messenger. **Secure CLI Socket Chat** connects you directly to a 
 
 ## Usage
 
-#### No encrypt chat (only 2 files needed: server.py, client.py)
+#### No-encrypt chat (only 2 files needed: server.py, client.py)
 1. Spin up server.py on any machine, define port number to listen on. 
 2. Open client.py, connect to defined port.
 3. Chat.
