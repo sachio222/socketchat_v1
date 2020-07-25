@@ -72,9 +72,11 @@ def receive():
 def send(msg=''):
     # Outgoing!!
     while msg != 'exit()':
+
         if msg == 'mute()':
             chime.muted = True
             print('\x1b[4;32;40m@YO: Silent mode. Turn on sound with unmute().\x1b[0m')
+            
         elif msg == 'unmute()':
             chime.muted = False
             print('\x1b[4;32;40m@YO: B00p! Turn sound off with mute().\x1b[0m')
