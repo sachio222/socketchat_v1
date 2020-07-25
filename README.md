@@ -37,7 +37,7 @@ You don't need messenger. **Secure CLI Socket Chat** connects you directly to a 
 5. Chat.
 
 ## Contributors
-J. Krajewski
+J. Krajewski, M. Holcombe
 
 
 ### Third party libraries
@@ -52,6 +52,8 @@ Install using ``` pip install cryptography```
 * Version 1.0
 
 ## Troubleshooting
+Currently tested on MacOSX and Linux. 
+
 Error:
 ```socket.gaierror: [Errno 8] nodename nor servname provided, or not known```
 
