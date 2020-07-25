@@ -22,7 +22,7 @@ You don't need messenger. **Secure CLI Socket Chat** connects you directly to a 
 
 ## Usage
 
-#### No encrypt chat (only 2 files needed: server.py, client.py)
+#### No-encrypt chat (only 2 files needed: server.py, client.py)
 1. Spin up server.py on any machine, define port number to listen on. 
 2. Open client.py, connect to defined port.
 3. Chat.
@@ -33,7 +33,7 @@ You don't need messenger. **Secure CLI Socket Chat** connects you directly to a 
 1. Spin up server.py same as above. 
 2. Run keygen-fernet.py to generate secret.key
 3. Share this SAME secret.key with any person you want to be able to read your messages, and have them place it in their socketchat folder.
-4. Open secc-client.py, connect to defined port. 
+4. Open sec-client.py, connect to defined port. 
 5. Chat.
 
 ## Contributors
@@ -51,7 +51,15 @@ Install using ``` pip install cryptography```
 ## Version 
 * Version 1.0
 
-## How-to use this code
+## Troubleshooting
+Currently tested on MacOSX and Linux. 
+
+Error:
+```socket.gaierror: [Errno 8] nodename nor servname provided, or not known```
+
+System: Mac
+
+Solution: [Enable Sharing Permissions, then Disable](https://stackoverflow.com/a/53382881/5369711)
 
 ## Contact
 #### Developer/Company
