@@ -36,7 +36,6 @@ class Server():
 
         if response.returncode == 0:
             output = stdout.decode('ASCII') # Decode to ascii
-            print(output)
             try:
                 ip = re.search(r"\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}", output).group(0)
                 t = re.search(r"(?<=\/)\d+\.\d+(?=\/)", output).group(0)
