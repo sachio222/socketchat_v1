@@ -37,7 +37,7 @@ You don't need messenger. **Secure CLI Socket Chat** connects you directly to a 
 5. Chat.
 
 ## Contributors
-J. Krajewski, M. Holcombe
+J. Krajewski
 
 
 ### Third party libraries
