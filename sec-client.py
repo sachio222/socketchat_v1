@@ -80,7 +80,11 @@ def send(msg=''):
         elif msg == 'unmute()':
             chime.muted = False
             print('\x1b[4;32;40m@YO: B00p! Turn sound off with mute().\x1b[0m')
-
+        
+        msg = input('')
+        enc_msg = cipher.encrypt(msg)
+        client.send(enc_msg)
+        
     # Close on exit()
     client.close()
     print('Disconnected.')

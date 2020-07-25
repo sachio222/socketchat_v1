@@ -72,8 +72,11 @@ if __name__ == '__main__':
     MAX_CNXN = 5
 
     host = socket.gethostname()
-    ip = socket.gethostbyname(host)
-
+    try:
+        ip = socket.gethostbyname(host)
+    except:
+        ip = socket.gethostbyname('localhost')
+        
     print(f'-+- Starting server on host: {host}')
     print(f'-+- Host IP: {ip}')
     port = input('-+- Choose port: ')
