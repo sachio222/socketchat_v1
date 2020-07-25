@@ -8,7 +8,7 @@ import os
 import sys
 import socket
 from threading import Thread
-from utils import ping
+from chat_util import ping
 
 BUFFSIZE = 4096  # Upped for encryption
 CURSOR_UP_ONE = '\x1b[1A'
