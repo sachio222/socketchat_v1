@@ -95,7 +95,7 @@ chime = Chime()
 
 if __name__ == '__main__':
 
-    ost = input('-+- Enter hostname of server: ')
+    host = input('-+- Enter hostname of server: ')
     host = host or 'ubuntu'
 
     port = input('-+- Choose port: ')
