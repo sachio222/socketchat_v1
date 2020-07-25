@@ -10,7 +10,7 @@ import sys
 import time
 import socket
 from threading import Thread
-from utils import ping
+from chat_util import ping
 
 from encryption.fernet import Cipher
 
