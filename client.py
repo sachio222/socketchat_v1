@@ -8,6 +8,7 @@ import os
 import sys
 import socket
 from threading import Thread
+from utils import ping
 
 BUFFSIZE = 4096  # Upped for encryption
 CURSOR_UP_ONE = '\x1b[1A'
@@ -67,10 +68,19 @@ def send(msg=''):
         if msg == 'mute()':
             chime.muted = True
             print('\x1b[4;32;40m@YO: Silent mode. Turn on sound with unmute().\x1b[0m')
+
         elif msg == 'unmute()':
             chime.muted = False
             print('\x1b[4;32;40m@YO: B00p! Turn sound off with mute().\x1b[0m')
         
+        elif msg.lower() == 'ping':
+            try:
+                ip, time, xmt, rec, = pngsrvr.ping()
+                print(f'\x1b[4;32;40m@YO: P0NG! {time}ms.|Sent: {xmt}|Rec: {rec}|From: {ip}\x1b[0m')
+
+            except:
+                print('\x1b[4;32;40m@YO: Server down. Disconnecting....\x1b[0m')
+
         msg = input('')
         client.send(msg.encode())
 
@@ -85,17 +95,15 @@ chime = Chime()
 
 if __name__ == '__main__':
 
-    host = input('-+- Enter hostname of server: ')
-    if not host:
-        # Set default
-        host = 'ubuntu'
+    ost = input('-+- Enter hostname of server: ')
+    host = host or 'ubuntu'
 
     port = input('-+- Choose port: ')
-    if not port:
-        # Set default
-        port = 12222
-    else:
-        port = int(port)
+    port = port or '12222'
+    port = int(port)
+
+    # Create ping object
+    pngsrvr = ping.Server(host, port)
 
     # Create client socket
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
