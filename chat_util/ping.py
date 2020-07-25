@@ -36,12 +36,17 @@ class Server():
 
         if response.returncode == 0:
             output = stdout.decode('ASCII') # Decode to ascii
-            ip = re.search(r"\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}", output).group(0)
-            t = re.search(r"\d+(?=ms)", output).group(0)
-            pkt_tx = re.search(r"\d+\s(?=packets)", output).group(0)
-            pkt_re = re.search(r"\d+\s(?=received)", output).group(0)
+            print(output)
+            try:
+                ip = re.search(r"\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}", output).group(0)
+                t = re.search(r"(?<=\/)\d+\.\d+(?=\/)", output).group(0)
+                pkt_tx = re.search(r"\d+\s(?=packets)", output).group(0)
+                pkt_re = re.search(r"\d+\s(?=received)", output).group(0)
 
-            reply = f'P0NG! {t}ms | Sent: {pkt_tx} | Rec: {pkt_re} | From: {ip}'
+                reply = f'P0NG! Roundtrip: {t}ms | Sent: {pkt_tx} | Rec: {pkt_re} | From: {ip}'
+                
+            except:
+                reply = "P0NG aint working right now. Let us know if it keeps screwing up."
 
         else:
             reply = f'{host} is down!'
@@ -49,5 +54,6 @@ class Server():
         return reply
 
 
-
-# ping_server.ping(host)
+host = 'www.meter.net'
+ping_server = Server(host)
+ping_server.ping(host)
