@@ -37,12 +37,18 @@ def handle_client(client):
         addr = addresses[client]
         nick = nicks[client]
 
-        if not data:
+        if not data or data == b'exit()':
             break
+
         from_client = data
         broadcast(nick, addr, from_client)
         # print(f'{addr}: {from_client.decode()}')
         print(f'@{nick.decode()}: {from_client.decode()}')
+
+
+    print(f'YO {nicks[client].decode()} has left the chat.') # local print
+    broadcast(b'YO', None, f'{nicks[client].decode()} has left the chat.'.encode())
+
     client.close()
     del nicks[client]
     exit()
