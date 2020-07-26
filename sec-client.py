@@ -41,7 +41,7 @@ def welcome_msg():
 
     # Get message from server
     from_server = client.recv(BUFFSIZE)
-    print(f"\x1b[4;32;40m{from_server.decode()}\x1b[0m")
+    print(f"\x1b[4;32;40m{from_server.decode()}\x1b[0m\n")
 
 
 def receive():

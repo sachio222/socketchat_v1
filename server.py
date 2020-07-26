@@ -9,6 +9,8 @@ For encrypted chat, use sec-client.py (requires addl libraries).
 import socket
 from threading import Thread
 
+from chat_util import room
+
 
 def accept_incoming_connections():
     # Accept the connections.
@@ -24,8 +26,13 @@ def accept_incoming_connections():
         addresses[client] = addr
 
         # Announce new guest
-        announce_msg = f"{nick.decode()} is in the house!"
-        broadcast(b'YO', None, announce_msg.encode())
+        announce_msg = f"{nick.decode()} is in the house! "
+        broadcast(b'YO', addr, announce_msg.encode())
+
+        # Tell me who's in here
+        room_status = room.get_status(addresses, nicks)
+        broadcast_self(b'YO', addr, room_status)
+        
         # from_client = b''
         Thread(target=handle_client, args=(client,)).start()
 
@@ -39,6 +46,16 @@ def handle_client(client):
 
         if not data or data == b'exit()':
             break
+        elif data == b'status()':
+
+            # TODO: Move this to function or Room class methood
+            # Challenge: broadcast isn't available from roomclass method
+            # don't want too many tiny functions like (get_status in this code)
+            # maybe an input controller that handles incoming keywords
+            # Tell me who's in here
+            room_status = room.get_status(addresses, nicks)
+            broadcast_self(b'YO', addr, room_status)
+
 
         from_client = data
         broadcast(nick, addr, from_client)
@@ -50,9 +67,14 @@ def handle_client(client):
     broadcast(b'YO', None, f'{nicks[client].decode()} has left the chat.'.encode())
 
     client.close()
+
+    # Clean up
     del nicks[client]
-    exit()
-    print('Client disconnected.')
+    del addresses[client]
+    people.remove(nicks[addr].decode())
+
+    # exit()
+    # print('Client disconnected.')
 
 
 def broadcast(nick, addr, from_client):
@@ -63,12 +85,24 @@ def broadcast(nick, addr, from_client):
         if socket.getpeername() != addr:
             socket.send(msg.encode(enc))
 
+def broadcast_self(nick, addr, from_client):
+
+    msg = f'@{nick.decode()}: {from_client.decode()}'
+
+    for socket in nicks:
+        if socket.getpeername() == addr:
+            socket.send(msg.encode(enc))
+
 
 enc = 'utf8'
 addresses = {}
 nicks = {}
+people = []
 
 welcome_msg = "\n=+= You're in. Welcome to the underground. =+="
+
+#Instantiate
+room = room.Room()
 
 if __name__ == '__main__':
 
