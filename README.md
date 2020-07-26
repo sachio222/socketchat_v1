@@ -1,5 +1,5 @@
 #### secure-cli-socketchat-python-v1
-# Secure CLI Socket Chat
+# Secure CLI Socket Chat (BETA)
 ### Street name: Encryptochat
 ======
 
