@@ -31,7 +31,7 @@ def welcome_msg():
 
     # Sned @user handle
     while True:
-        handle = input("Enter your handle:\n@")
+        handle = input("-+- Enter your handle:\n@")
         if handle:
             break
     client.send(handle.encode())
@@ -48,6 +48,9 @@ def receive():
             incoming = client.recv(BUFFSIZE)
             incoming = incoming.decode()
 
+            if not incoming:
+                break
+
             # Clear line when new text comes in (otherwise it'll glitch out.)
             sys.stdout.write(ERASE_LINE)
 
@@ -57,7 +60,6 @@ def receive():
             # Display with some sort of colors
             print(f"\r\x1b[1;33;40m{incoming}\x1b[0m")
 
-
         except OSError:
             break
 
@@ -65,22 +67,30 @@ def receive():
 def send(msg=''):
     # Outgoing!!
     while msg != 'exit()':
-        if msg == 'mute()':
-            chime.muted = True
-            print('\x1b[4;32;40m@YO: Silent mode. Turn on sound with unmute().\x1b[0m')
+        try:
+            if msg == 'mute()':
+                chime.muted = True
+                print(
+                    '\x1b[4;32;40m@YO: Silent mode. Turn on sound with unmute().\x1b[0m'
+                )
 
-        elif msg == 'unmute()':
-            chime.muted = False
-            print('\x1b[4;32;40m@YO: B00p! Turn sound off with mute().\x1b[0m')
-        
-        elif msg.lower() == 'ping':
-            reply = pngsrvr.ping()
-            print(f'\x1b[4;32;40m@YO: {reply}\x1b[0m')
+            elif msg == 'unmute()':
+                chime.muted = False
+                print(
+                    '\x1b[4;32;40m@YO: B00p! Turn sound off with mute().\x1b[0m'
+                )
 
-        msg = input('')
-        client.send(msg.encode())
+            elif msg.lower() == 'ping':
+                reply = pngsrvr.ping()
+                print(f'\x1b[4;32;40m@YO: {reply}\x1b[0m')
 
+            msg = input('')
+            client.send(msg.encode())
+
+        except OSError:
+            break
     # Close on exit()
+
     client.close()
     print('Disconnected.')
     exit()

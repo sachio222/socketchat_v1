@@ -26,6 +26,7 @@ class Chime:
     def play(self):
         if not self.muted:
             sys.stdout.write("\a")
+            sys.stdout.flush()
         else:
             return
 
@@ -41,7 +42,7 @@ def welcome_msg():
 
     # Get message from server
     from_server = client.recv(BUFFSIZE)
-    print(f"\x1b[4;32;40m{from_server.decode()}\x1b[0m\n")
+    print(f"\x1b[4;32;40m{from_server.decode()}\x1b[0m")
 
 
 def receive():
@@ -49,16 +50,21 @@ def receive():
     while True:
         try:
             incoming = client.recv(BUFFSIZE)
-            
+
             try:
                 handle, cip_msg = cipher.split(incoming)
-                plain_text = cipher.decrypt(cip_msg).decode() # To str
+                plain_text = cipher.decrypt(cip_msg).decode()  # To str
                 incoming = f'{handle}: {plain_text}'
+
             except:
-                incoming = incoming.decode() # Fallback
+                incoming = incoming.decode()  # Fallback
+
+            if not incoming:
+                break
 
             # Clear line when new text comes in (otherwise it'll glitch out.)
             sys.stdout.write(ERASE_LINE)
+            sys.stdout.flush()
 
             # Bell
             chime.play()
@@ -66,41 +72,25 @@ def receive():
             # Display with some sort of colors
             print(f"\r\x1b[1;33;40m{incoming}\x1b[0m")
 
-
         except OSError:
             break
-
-def input_controller(usr_input):
-    """Work in progress, not in use currently. 
-    """
-    while usr_input != 'exit()':
-
-        if usr_input == 'mute()':
-            chime.muted = True
-            print('\x1b[4;32;40m@YO: Silent mode. Turn on sound with unmute().\x1b[0m')
-
-        elif usr_input == 'unmute()':
-            chime.muted = False
-            print('\x1b[4;32;40m@YO: B00p! Turn sound off with mute().\x1b[0m')
-
-        elif usr_input.lower() == 'ping':
-            tic = time.process_time()
-            client.send(usr_input.encode())
-        
-        else:
-            # Transmit
-            enc_msg = cipher.encrypt(usr_input)
-            client.send(enc_msg, tic)
-
 
 
 def send(msg=''):
     # Outgoing!!
     while msg != 'exit()':
 
-        if msg == 'mute()':
+        msg = input('')
+
+        if msg == 'exit()' or msg == 'status()':
+            # Passthru server side controls
+            pass
+
+        elif msg == 'mute()':
             chime.muted = True
-            print('\x1b[4;32;40m@YO: Silent mode. Turn on sound with unmute().\x1b[0m')
+            print(
+                '\x1b[4;32;40m@YO: Silent mode. Turn on sound with unmute().\x1b[0m'
+            )
 
         elif msg == 'unmute()':
             chime.muted = False
@@ -109,12 +99,12 @@ def send(msg=''):
         elif msg.lower() == 'ping':
             reply = pngsrvr.ping()
             print(f'\x1b[4;32;40m@YO: {reply}\x1b[0m')
-            
-        
-        msg = input('')
-        enc_msg = cipher.encrypt(msg)
-        client.send(enc_msg)
-        
+
+        else:
+            msg = cipher.encrypt(msg).decode()  #Decodes and then encodes again
+
+        client.send(msg.encode())
+
     # Close on exit()
     client.close()
     print('Disconnected.')
@@ -152,3 +142,8 @@ if __name__ == '__main__':
     receive_thread.start()
     send_thread = Thread(target=send)
     send_thread.start()
+
+    receive_thread.join()
+    send_thread.join()
+
+    client.close()

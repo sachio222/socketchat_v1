@@ -1,4 +1,5 @@
 class Room():
+
     def __init__(self):
         pass
 
@@ -6,7 +7,7 @@ class Room():
         people = []
         for addr in addresses:
             person = nicks[addr].decode()
-            people.append(f'@{person}') 
+            people.append(f'@{person}')
 
         ppl_qty = len(people)
         ppl_lst = ', '.join(people)
@@ -14,7 +15,5 @@ class Room():
         # Outputs
         # @YO: 4 online - @Jake, @toof, @veronica, @pizzanator
         room_status = f'{ppl_qty} online - {ppl_lst}'
-        
-        return room_status.encode() # to bytes
 
-        
+        return room_status.encode()  # to bytes

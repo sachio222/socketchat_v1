@@ -9,7 +9,7 @@ class Cipher():
         except:
             self.generate_key()
             self.key = self.load_key()
-            
+
         self.f = Fernet(self.key)
 
     def generate_key(self):
