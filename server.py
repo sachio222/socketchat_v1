@@ -32,7 +32,7 @@ def accept_incoming_connections():
         # Tell me who's in here
         room_status = room.get_status(addresses, nicks)
         broadcast_self(b'YO', addr, room_status)
-        
+
         # from_client = b''
         Thread(target=handle_client, args=(client,)).start()
 
@@ -46,6 +46,7 @@ def handle_client(client):
 
         if not data or data == b'exit()':
             break
+
         elif data == b'status()':
 
             # TODO: Move this to function or Room class methood
@@ -56,25 +57,24 @@ def handle_client(client):
             room_status = room.get_status(addresses, nicks)
             broadcast_self(b'YO', addr, room_status)
 
-
         from_client = data
         broadcast(nick, addr, from_client)
         # print(f'{addr}: {from_client.decode()}')
         print(f'@{nick.decode()}: {from_client.decode()}')
 
-
-    print(f'YO {nicks[client].decode()} has left the chat.') # local print
-    broadcast(b'YO', None, f'{nicks[client].decode()} has left the chat.'.encode())
+    print(f'YO {nicks[client].decode()} has left the chat.')  # local print
+    broadcast(b'YO', None,
+              f'{nicks[client].decode()} has left the chat.'.encode())
 
     client.close()
 
     # Clean up
     del nicks[client]
     del addresses[client]
-    people.remove(nicks[addr].decode())
+    # people.remove(nicks[addr].decode())
 
-    # exit()
-    # print('Client disconnected.')
+    exit()
+    print('Client disconnected.')
 
 
 def broadcast(nick, addr, from_client):
@@ -84,6 +84,7 @@ def broadcast(nick, addr, from_client):
     for socket in nicks:
         if socket.getpeername() != addr:
             socket.send(msg.encode(enc))
+
 
 def broadcast_self(nick, addr, from_client):
 
@@ -116,7 +117,7 @@ if __name__ == '__main__':
         ip = socket.gethostbyname(host)
     except:
         ip = socket.gethostbyname('localhost')
-        
+
     print(f'-+- Starting server on host: {host}')
     print(f'-+- Host IP: {ip}')
     port = input('-+- Choose port: ')
