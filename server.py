@@ -31,7 +31,7 @@ def accept_incoming_connections():
 
         # Tell me who's in here
         room_status = room.get_status(addresses, nicks)
-        broadcast_self(b'YO', addr, room_status)
+        broadcast(b'YO', addr, room_status)
 
         # from_client = b''
         Thread(target=handle_client, args=(client,)).start()
