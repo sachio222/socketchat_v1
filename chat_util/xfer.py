@@ -4,9 +4,7 @@ import socket
 import os
 
 CHUNK_SIZE = 4096
-# path = 'image.jpg'
-path = 'VSCode-darwin-stable.zip'
-
+path = 'image.jpg'
 
 class SendFile():
 
