@@ -132,10 +132,10 @@ if __name__ == '__main__':
     host = host or 'ubuntu'
     
     #TESTING#
-    host = '127.0.0.1'
+    # host = '127.0.0.1'
 
     port = input('-+- Choose port: ')
-    port = port or '1415'
+    port = port or '12222'
     port = int(port)
 
     #TESING
