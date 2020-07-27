@@ -130,7 +130,7 @@ if __name__ == '__main__':
 
     host = input('-+- Enter hostname of server: ')
     host = host or 'ubuntu'
-    
+
     #TESTING#
     # host = '127.0.0.1'
 
@@ -150,7 +150,7 @@ if __name__ == '__main__':
     try:
         client.connect((host, port))  # Opens socket connect if server running.
     except:
-        # TESTING   
+        # TESTING
         print('Port not available. Try again.')
         exit()
 

@@ -53,19 +53,19 @@ def handle_client(client):
             # Tell me who's in here
             room_status = room.get_status(addresses, nicks)
             broadcast_self(b'YO', addr, room_status)
-        
+
         elif data == b'sendfile()':
             filesize = client.recv(BUFFSIZE)
             waiting_msg = (f'Waiting for user to accept transfer...')
             broadcast_self(b'YO-xfer', addr, waiting_msg.encode())
             choice = input(f'Accept file of size {filesize.decode()}? (y or n)')
-            
+
             # User accepted file
             if choice == 'y':
                 f_xfer.receive_file(data, BUFFSIZE, filesize, client)
-            success_msg = (f'{filesize.decode()}b successfully transfered, dawg.')
+            success_msg = (
+                f'{filesize.decode()}b successfully transfered, dawg.')
             broadcast_self(b'YO-xfer', addr, success_msg.encode())
-
 
         from_client = data
         broadcast(nick, addr, from_client)
@@ -76,7 +76,8 @@ def handle_client(client):
     broadcast(b'YO', None,
               f'{nicks[client].decode()} has left the chat.'.encode())
 
-    client.shutdown; client.close()
+    client.shutdown
+    client.close()
 
     # Clean up
     del nicks[client]
@@ -117,7 +118,6 @@ welcome_msg = "\n=+= You're in. Welcome to the underground. =+="
 #Instantiate
 room = room.Room()
 
-
 if __name__ == '__main__':
 
     serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Make object
@@ -138,7 +138,6 @@ if __name__ == '__main__':
     port = port or 12222
     port = int(port)
 
-
     try:
         serv.bind((host, port))  # bind to host as socket server.
     except:
@@ -153,4 +152,5 @@ if __name__ == '__main__':
     incoming_thread.start()
 
     incoming_thread.join()
-    serv.shutdown(); serv.close()
+    serv.shutdown()
+    serv.close()
