@@ -10,7 +10,7 @@ import sys
 import time
 import socket
 from threading import Thread
-from chat_util import ping
+from chat_util import ping, xfer
 
 from encryption.fernet import Cipher
 
@@ -63,8 +63,9 @@ def receive():
                 break
 
             # Clear line when new text comes in (otherwise it'll glitch out.)
+
             sys.stdout.write(ERASE_LINE)
-            sys.stdout.flush()
+            # sys.stdout.flush()
 
             # Bell
             chime.play()
@@ -85,6 +86,16 @@ def send(msg=''):
         if msg == 'exit()' or msg == 'status()':
             # Passthru server side controls
             pass
+
+        elif msg == 'sendfile()':
+            # Send incoming image alert
+            client.send(msg.encode())
+            f_xfer.sender_prompt(client)
+            # f_xfer.send_filesize(None, client)
+            # print(decision)
+            # f_xfer.xfer_file(None, client)
+            # else:
+            #     print('File transfer declined.')
 
         elif msg == 'mute()':
             chime.muted = True
@@ -119,10 +130,16 @@ if __name__ == '__main__':
 
     host = input('-+- Enter hostname of server: ')
     host = host or 'ubuntu'
+    
+    #TESTING#
+    host = '127.0.0.1'
 
     port = input('-+- Choose port: ')
-    port = port or '12222'
+    port = port or '1415'
     port = int(port)
+
+    #TESING
+    # port = 1414
 
     # Create ping object
     pngsrvr = ping.Server(host, port)
@@ -133,7 +150,12 @@ if __name__ == '__main__':
     try:
         client.connect((host, port))  # Opens socket connect if server running.
     except:
-        client.connect((host, port))  # For debug
+        # TESTING   
+        print('Port not available. Try again.')
+        exit()
+
+    # Instantiate file transfer class
+    f_xfer = xfer.SendFile(client)
 
     welcome_msg()
 
