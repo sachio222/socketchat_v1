@@ -8,7 +8,6 @@ For encrypted chat, use sec-client.py (requires addl libraries).
 
 import socket
 from threading import Thread
-
 from chat_util import room, xfer
 
 
@@ -31,7 +30,7 @@ def accept_incoming_connections():
 
         # Tell me who's in here
         room_status = room.get_status(addresses, nicks)
-        broadcast(b'YO', addr, room_status)
+        broadcast(b'YO', None, room_status)
 
         # from_client = b''
         Thread(target=handle_client, args=(client,)).start()
@@ -136,7 +135,7 @@ if __name__ == '__main__':
     print(f'-+- Host IP: {ip}')
     port = input('-+- Choose port: ')
 
-    port = port or 1415
+    port = port or 12222
     port = int(port)
 
 
