@@ -1,9 +1,11 @@
 class Room():
+    """Returns room details"""
 
     def __init__(self):
         pass
 
     def get_status(self, addresses, nicks):
+        """Returns people in the room when called, and outputs to channel"""
         people = []
         for addr in addresses:
             person = nicks[addr].decode()
