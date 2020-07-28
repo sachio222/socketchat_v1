@@ -41,9 +41,10 @@ def accept_incoming_connections():
 
 def handle_client(client):
     while True:
-        data = client.recv(BUFFSIZE)  # Store incoming as data.
-        addr = addresses[client]
-        nick = nicks[client]
+        try:
+            data = client.recv(BUFFSIZE)  # Store incoming as data.
+            addr = addresses[client]
+            nick = nicks[client]
 
         except socket.timeout as err:
              print(f"-=- socket.timeout: {err}")
