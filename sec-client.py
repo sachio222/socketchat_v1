@@ -155,7 +155,7 @@ if __name__ == '__main__':
         exit()
 
     # Instantiate file transfer class
-    f_xfer = xfer.SendFile(client)
+    f_xfer = xfer.FileXfer(client)
 
     welcome_msg()
 
