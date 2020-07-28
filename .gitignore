@@ -2,4 +2,8 @@
 *.pyc
 encryption/__pycache__/
 __pycache__/
+<<<<<<< HEAD
 tmp/
+=======
+.DS_Store
+._DS_Store
