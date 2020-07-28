@@ -12,7 +12,7 @@ import sys
 import time
 import socket
 from threading import Thread
-from chat_util import ping, xfer
+from chat_util import ping, xfer, room
 
 from encryption.fernet import Cipher
 
@@ -125,7 +125,7 @@ def send(msg=''):
 
 
 # Instantiate sound
-chime = Chime()
+chime = room.Chime()
 cipher = Cipher()
 
 if __name__ == '__main__':
