@@ -63,7 +63,7 @@ def handle_client(client):
             # maybe an input controller that handles incoming keywords
             # Tell me who's in here
             room_status = room.get_status(addresses, nicks)
-            broadcast(b'YO', addr, room_status, 'self')
+            broadcast(b'YO', addr, room_status, 'all')
 
         elif data == b'sendfile()':
             filesize = client.recv(BUFFSIZE)
