@@ -56,26 +56,40 @@ def handle_client(client):
 
         elif data == b'sendfile()':
             filesize = client.recv(BUFFSIZE)
-            while isinstance(filesize, int):
-                print(filesize)
-                # waiting_msg = (f'Waiting for user to accept transfer...')
-                # broadcast(b'YO-xfer', addr, waiting_msg.encode(), 'self')
-                choice = input(f'Accept file of size {filesize.decode()}? (y or n)')
 
-                # User accepted file
-                if choice == 'y':
-                    f_xfer.receive_file(data, BUFFSIZE, filesize, client)
-                success_msg = (
-                    f'{filesize.decode()}b successfully transfered, dawg.')
-                broadcast(b'YO-xfer', addr, success_msg.encode(), 'self')
-            
-            print('sendfile() cancelled.')
-            # broadcast('YO:', addr, filesize, 'self')
+            # While last thing to come through was actually filesize.
+            # This means the send method is initiated properly.
+            try:
+                while int(filesize.decode()):
+                    waiting_msg = (f'Waiting for user to accept transfer...')
+                    broadcast(b'YO-xfer', addr, waiting_msg.encode(), 'self')
+                    
+                    choice = input(f'Accept file of size {filesize.decode()}? (Y or N) >> ')
 
-        from_client = data
-        broadcast(nick, addr, from_client)
+                    # User accepted file
+                    if choice.lower() == 'y':
+                        data = b''
+
+                        f_xfer.receive_file(data, BUFFSIZE, filesize, client)
+
+                        success_msg = (
+                            f'{filesize.decode()}b successfully transfered, dawg.')
+                        broadcast(b'YO-xfer', addr, success_msg.encode(), 'self')
+                        break
+                    elif choice.lower() == 'n':
+                        print('sendfile() cancelled.')
+                        cancel_msg = ('Recipient has declined transfer request.')
+                        broadcast(b'YO-xfer', addr, cancel_msg.encode(), 'self')
+                        print(cancel_msg)
+                        break
+            except:
+                print('sendfile() cancelled.')
+
+
+        msg_from_client = data
+        broadcast(nick, addr, msg_from_client)
         # print(f'{addr}: {from_client.decode()}')
-        print(f'@{nick.decode()}: {from_client.decode()}')
+        print(f'@{nick.decode()}: {msg_from_client.decode()}')
 
     print(f'YO {nicks[client].decode()} has left the chat.')  # local print
     broadcast(b'YO', None,
@@ -93,15 +107,15 @@ def handle_client(client):
     print('Client disconnected.')
 
 
-def broadcast(nick, addr, msg_from_client, target='others'):
+def broadcast(send_from_nick, addr, msg_from_client, target='others'):
     """
     Inputs
-        nick: (str) Display handle.
+        send_from_nick: (str) Display handle.
         addr: (address) Sender's address
         msg_from_client: (str)
         target: (str) Options: 'others', 'self', 'all'
     """
-    msg = f'@{nick.decode()}: {msg_from_client.decode()}'
+    msg = f'@{send_from_nick.decode()}: {msg_from_client.decode()}'
 
     for socket in nicks:
         if target == 'others':

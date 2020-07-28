@@ -22,23 +22,24 @@ class FileXfer():
                 break
         
             while True:
-                conf = input(f'-+- Confirm send to {recip}: {path}\n-+- (y or n): ')
+                conf = input(f'-+- Confirm send to {recip}: {path}\n-+- (Y or N) >> ')
                 if conf.lower() == 'y':
                     #
                     # Here: Send accept prompt to client. 
                     #
                     self.send_filesize(path, client_socket)
-                    # encrypt file
+                    # HERE: encrypt file
+                    print('waiting')
+                    # data = client_socket.recv(2048)
+                    # print('done')
                     self.xfer_file(path, client_socket)
-                    # break
+                    break
 
                 elif conf.lower() == 'n':
                     self._user_did_cancel('cancel')
                     break
 
             break
-
-        print('chat awy')
         
 
     def recip_prompt(self, path, filesize):
@@ -68,11 +69,11 @@ class FileXfer():
                 while bytes_recd < int(filesize):
                     f.write(data)
                     data = client.recv(BUFFSIZE)
-                    if data == b'':
-                        raise RuntimeError("socket connection broken")
                     bytes_recd = bytes_recd + len(data)
                     print(bytes_recd)
-                    # with open('image(2).jpg', 'ab') as f:
+                    print(data)
+                    if data == b'':
+                        raise RuntimeError("socket connection broken")
 
         except ValueError:
             pass
