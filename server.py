@@ -25,8 +25,9 @@ def accept_incoming_connections():
         nick = client.recv(BUFFSIZE)
         nicks[client] = nick
         addresses[client] = addr
+        client.settimeout(900.0)
 
-        # Announce new guest
+        # Announcce new guest
         announce_msg = f"{nick.decode()} is in the house! "
         broadcast(b'YO', addr, announce_msg.encode())
 
@@ -43,6 +44,13 @@ def handle_client(client):
         data = client.recv(BUFFSIZE)  # Store incoming as data.
         addr = addresses[client]
         nick = nicks[client]
+
+        except socket.timeout as err:
+             print(f"-=- socket.timeout: {err}")
+             break
+        except socket.error as err:
+             print(f"-=- socket.error: {err}")
+             break
 
         if not data or data == b'exit()':
             break
