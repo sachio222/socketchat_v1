@@ -43,28 +43,36 @@ class FileXfer():
         
 
     def recip_prompt(self, path, filesize):
+        """Prompts to show file recipient."""
+
         print(f'Accept {path} of size {filesize} bytes? | (y or n) \n')
         input('>> ')
 
     def send_filesize(self, path, client_socket):
+        """Calculates filesize of a path and sends integer."""
+
         with open('image.jpg', 'rb') as f:
             self.filesize = os.path.getsize('image.jpg')
 
         client_socket.send(str(self.filesize).encode())  # HackyAF
         return self.filesize
 
-    def xfer_file(self, path, client_socket):
-        # This is fine. It's just going to start pouring in the data.
-        with open('image.jpg', 'rb') as f:
-            client_socket.sendfile(f, 0, self.filesize)
-            # client_socket.send(f'filesize is: {filesize}'.encode())
-        # client_socket.close()
+    def xfer_file(self, path, server_socket):
+        """Opens file at path, sends to server_socket."""
+
+        with open(path, 'rb') as f:
+            server_socket.sendfile(f, 0, self.filesize)
 
     def receive_file(self, data, BUFFSIZE, filesize, client):
+        """Download file transfer from server."""
+
         try:
             data = client.recv(BUFFSIZE)
             bytes_recd = len(data)
             print("STARTING=========")
+            
+            # target_path = self._set_target_path()
+
             with open('image(2).jpg', 'wb') as f:
                 while bytes_recd < int(filesize):
                     f.write(data)
@@ -81,6 +89,15 @@ class FileXfer():
         # sock.close()
     
     def _get_path(self, path):
+        """Validate if selected file exists. 
+
+        Input:
+            path: (string) a file location.
+
+        Returns:
+            path: (str or path??) a path to an existing file.
+        """
+
         print("-+- Send file to recipient. (Type 'cancel' at any time.)")
         while not os.path.exists(path):
             path = input("-+- Input filepath >> ")
@@ -98,7 +115,18 @@ class FileXfer():
         
         return path
 
+    def _set_target_path(self):
+        """Adds number if file with same name exists"""
+        
+        ### TODO: Finish this.
+
+        return target_path
+
     def _get_recip(self, nick):
+        """ Returns valid recipient for file send. """
+
+        ### TODO: Finish this.
+
         while not self._valid_recip(nick):
             nick = input("-+- Recipient's handle?: @")
 
@@ -111,16 +139,21 @@ class FileXfer():
 
         return nick
 
-    def _user_did_cancel(self, inp_str):
-        if inp_str.lower() == 'cancel':
-            print('x-x Send file cancelled. Continue chatting.')
+    def _valid_recip(self, nick):
+        """Returns true if username matches member in room."""
+
+        ### TODO: Finish this. 
+
+        if nick:
             return True
         else:
             return False
 
-    def _valid_recip(self, nick):
-        # check if nick is real.
-        if nick:
+    def _user_did_cancel(self, inp_str):
+        """Returns true if inp_str is canceled, and shows message. """
+
+        if inp_str.lower() == 'cancel':
+            print('x-x Send file cancelled. Continue chatting.')
             return True
         else:
             return False
