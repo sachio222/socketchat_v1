@@ -25,7 +25,7 @@ def accept_incoming_connections():
         nick = client.recv(BUFFSIZE)
         nicks[client] = nick
         addresses[client] = addr
-        client.settimeout(900.0)
+        client.settimeout(None)
 
         # Announcce new guest
         announce_msg = f"{nick.decode()} is in the house! "
@@ -187,6 +187,7 @@ if __name__ == '__main__':
         print("Port not available. Try again in a minute.")
         exit()
 
+    serv.settimeout(None)
     serv.listen(MAX_CNXN)  # listen for data.
     print("-+- Waiting for connections...")
 
