@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 
-import socket
 import os
+import time
+import socket
+
 
 class FileXfer():
     """For file transfer, sending and receiving."""
@@ -12,6 +14,7 @@ class FileXfer():
     def sender_prompt(self, client_socket, path='', recip=''):
         """For the sender, takes in filepath and send confirmation.
         """
+
         while True:
             path = self._get_path(path)
             if not path:
@@ -20,12 +23,13 @@ class FileXfer():
             recip = self._get_recip(recip)
             if not recip:
                 break
-        
+
             while True:
-                conf = input(f'-+- Confirm send to {recip}: {path}\n-+- (Y or N) >> ')
+                conf = input(
+                    f'-+- Confirm send to {recip}: {path}\n-+- (Y or N) >> ')
                 if conf.lower() == 'y':
                     #
-                    # Here: Send accept prompt to client. 
+                    # Here: Send accept prompt to client.
                     #
                     self.send_filesize(path, client_socket)
                     # HERE: encrypt file
@@ -40,7 +44,6 @@ class FileXfer():
                     break
 
             break
-        
 
     def recip_prompt(self, path, filesize):
         """Prompts to show file recipient."""
@@ -70,7 +73,7 @@ class FileXfer():
             data = client.recv(BUFFSIZE)
             bytes_recd = len(data)
             print("STARTING=========")
-            
+
             # target_path = self._set_target_path()
 
             with open('image(2).jpg', 'wb') as f:
@@ -87,7 +90,7 @@ class FileXfer():
             pass
         print("FINISHED==========")
         # sock.close()
-    
+
     def _get_path(self, path):
         """Validate if selected file exists. 
 
@@ -112,12 +115,12 @@ class FileXfer():
             else:
                 # remove absolute path if there is one
                 path = os.path.basename(path)
-        
+
         return path
 
     def _set_target_path(self):
         """Adds number if file with same name exists"""
-        
+
         ### TODO: Finish this.
         target_path = ''
 
@@ -143,7 +146,7 @@ class FileXfer():
     def _valid_recip(self, nick):
         """Returns true if username matches member in room."""
 
-        ### TODO: Finish this. 
+        ### TODO: Finish this.
 
         if nick:
             return True
