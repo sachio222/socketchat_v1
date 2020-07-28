@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/ python3
 
 """SOCKETCHAT by J. Krajewski, 2020, All rights reserved.
 
