@@ -4,8 +4,8 @@ import socket
 import os
 
 class FileXfer():
-    """For file transfer, sending and receiving.
-    """
+    """For file transfer, sending and receiving."""
+
     def __init__(self, client_socket):
         pass
 
@@ -52,7 +52,7 @@ class FileXfer():
         """Calculates filesize of a path and sends integer."""
 
         with open('image.jpg', 'rb') as f:
-            self.filesize = os.path.getsize('image.jpg')
+            self.filesize = os.path.getsize(f)
 
         client_socket.send(str(self.filesize).encode())  # HackyAF
         return self.filesize
@@ -119,6 +119,7 @@ class FileXfer():
         """Adds number if file with same name exists"""
         
         ### TODO: Finish this.
+        target_path = ''
 
         return target_path
 
