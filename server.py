@@ -30,7 +30,7 @@ def accept_incoming_connections():
 
         # Tell me who's in here
         room_status = room.get_status(addresses, nicks)
-        broadcast(b'YO', None, room_status)
+        broadcast(b'YO', None, room_status, 'all')
 
         # from_client = b''
         Thread(target=handle_client, args=(client,)).start()
@@ -52,20 +52,25 @@ def handle_client(client):
             # maybe an input controller that handles incoming keywords
             # Tell me who's in here
             room_status = room.get_status(addresses, nicks)
-            broadcast_self(b'YO', addr, room_status)
+            broadcast(b'YO', addr, room_status, 'self')
 
         elif data == b'sendfile()':
             filesize = client.recv(BUFFSIZE)
-            waiting_msg = (f'Waiting for user to accept transfer...')
-            broadcast_self(b'YO-xfer', addr, waiting_msg.encode())
-            choice = input(f'Accept file of size {filesize.decode()}? (y or n)')
+            while isinstance(filesize, int):
+                print(filesize)
+                # waiting_msg = (f'Waiting for user to accept transfer...')
+                # broadcast(b'YO-xfer', addr, waiting_msg.encode(), 'self')
+                choice = input(f'Accept file of size {filesize.decode()}? (y or n)')
 
-            # User accepted file
-            if choice == 'y':
-                f_xfer.receive_file(data, BUFFSIZE, filesize, client)
-            success_msg = (
-                f'{filesize.decode()}b successfully transfered, dawg.')
-            broadcast_self(b'YO-xfer', addr, success_msg.encode())
+                # User accepted file
+                if choice == 'y':
+                    f_xfer.receive_file(data, BUFFSIZE, filesize, client)
+                success_msg = (
+                    f'{filesize.decode()}b successfully transfered, dawg.')
+                broadcast(b'YO-xfer', addr, success_msg.encode(), 'self')
+            
+            print('sendfile() cancelled.')
+            # broadcast('YO:', addr, filesize, 'self')
 
         from_client = data
         broadcast(nick, addr, from_client)
@@ -74,9 +79,9 @@ def handle_client(client):
 
     print(f'YO {nicks[client].decode()} has left the chat.')  # local print
     broadcast(b'YO', None,
-              f'{nicks[client].decode()} has left the chat.'.encode())
+              f'{nicks[client].decode()} has left the chat.'.encode(), 'all')
 
-    client.shutdown
+    client.shutdown()
     client.close()
 
     # Clean up
@@ -88,22 +93,40 @@ def handle_client(client):
     print('Client disconnected.')
 
 
-def broadcast(nick, addr, from_client):
-
-    msg = f'@{nick.decode()}: {from_client.decode()}'
-
-    for socket in nicks:
-        if socket.getpeername() != addr:
-            socket.send(msg.encode())
-
-
-def broadcast_self(nick, addr, from_client):
-
-    msg = f'@{nick.decode()}: {from_client.decode()}'
+def broadcast(nick, addr, msg_from_client, target='others'):
+    """
+    Inputs
+        nick: (str) Display handle.
+        addr: (address) Sender's address
+        msg_from_client: (str)
+        target: (str) Options: 'others', 'self', 'all'
+    """
+    msg = f'@{nick.decode()}: {msg_from_client.decode()}'
 
     for socket in nicks:
-        if socket.getpeername() == addr:
+        if target == 'others':
+            if socket.getpeername() != addr:
+                socket.send(msg.encode())
+
+        elif target == 'self':
+            if socket.getpeername() == addr:
+                socket.send(msg.encode())
+        
+        elif target == 'all':
             socket.send(msg.encode())
+        
+        else:
+            raise Exception("Valid options are 'all', 'self', 'others'")
+
+
+
+# def broadcast_self(nick, addr, from_client):
+
+#     msg = f'@{nick.decode()}: {from_client.decode()}'
+
+#     for socket in nicks:
+#         if socket.getpeername() == addr:
+#             socket.send(msg.encode())
 
 
 BUFFSIZE = 4096
@@ -123,7 +146,7 @@ if __name__ == '__main__':
     serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Make object
 
     # Instantiate transfer Class
-    f_xfer = xfer.SendFile(serv)
+    f_xfer = xfer.FileXfer(serv)
 
     host = socket.gethostname()
     try:
