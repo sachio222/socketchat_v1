@@ -8,7 +8,7 @@ For encrypted chat, use sec-client.py (requires addl libraries).
 
 import socket
 from threading import Thread
-from chat_util import room, xfer
+from chat_util import room, xfers
 
 
 def accept_incoming_connections():
@@ -118,29 +118,19 @@ def broadcast(send_from_nick, addr, msg_from_client, target='others'):
     msg = f'@{send_from_nick.decode()}: {msg_from_client.decode()}'
 
     for socket in nicks:
-        if target == 'others':
+        if target == 'others': # Everyone but sender
             if socket.getpeername() != addr:
                 socket.send(msg.encode())
 
-        elif target == 'self':
+        elif target == 'self': # Sender only
             if socket.getpeername() == addr:
                 socket.send(msg.encode())
         
-        elif target == 'all':
+        elif target == 'all': # Everyone
             socket.send(msg.encode())
         
         else:
             raise Exception("Valid options are 'all', 'self', 'others'")
-
-
-
-# def broadcast_self(nick, addr, from_client):
-
-#     msg = f'@{nick.decode()}: {from_client.decode()}'
-
-#     for socket in nicks:
-#         if socket.getpeername() == addr:
-#             socket.send(msg.encode())
 
 
 BUFFSIZE = 4096
