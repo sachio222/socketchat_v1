@@ -150,6 +150,7 @@ class FileXfer():
 
         if nick:
             return True
+            
         else:
             return False
 
@@ -159,5 +160,6 @@ class FileXfer():
         if inp_str.lower() == 'cancel':
             print('x-x Send file cancelled. Continue chatting.')
             return True
+
         else:
             return False
