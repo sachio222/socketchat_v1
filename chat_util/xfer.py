@@ -119,7 +119,7 @@ class FileXfer():
         return path
 
     def _set_target_path(self):
-        """Adds number if file with same name exists"""
+        """Adds number if file with same name exists."""
 
         ### TODO: Finish this.
         target_path = ''
@@ -127,7 +127,7 @@ class FileXfer():
         return target_path
 
     def _get_recip(self, nick):
-        """ Returns valid recipient for file send. """
+        """ Returns valid recipient for file send."""
 
         ### TODO: Finish this.
 
