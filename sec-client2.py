@@ -10,6 +10,7 @@ import os
 import sys
 import time
 import socket
+import argparse
 from threading import Thread, Lock
 from encryption.fernet import Cipher
 from chat_util import ping, xfer, room
@@ -33,49 +34,52 @@ class RoomIO():
         incoming = self.cli_sock.recv(self.BFFR)
         self._print_msg(incoming.decode(), 'green')
 
-    def send(self, encrypted=True):
+    def send(self):
         # Outgoing!!
+
         while self.msg != 'exit()':
 
             self.msg = input('')
 
-            self.msg = self._msg_handler(self.msg)
+            self.msg, bypass_e = self._msg_handler(self.msg)
 
-            if encrypted:
-                self.msg = cipher.encrypt(self.msg)
+            if self.is_encrypted:
+                if not bypass_e:
+                    self.msg = cipher.encrypt(self.msg)
+                else:
+                    self.msg = self.msg.encode()
+            else:
+                self.msg = self.msg.encode()
 
             self._xmit_with_lock(self.msg, self.cli_sock)
 
-        self.cli_sock.shutdown()
+        # self.cli_sock.shutdown(socket.SHUT_RDWR)
         self.cli_sock.close()
         print('Disconnected')
         exit()
 
     def receive(self):
 
-        # Incoming!!
         while True:
-            try:
-                incoming = self.cli_sock.recv(self.BFFR)
+            # Incoming!!
+            incoming = self.cli_sock.recv(self.BFFR)
 
-                if not incoming:
-                    print('You got disconnected, Foo! Get back in there!')
-                    exit()
-                    break
-
+            if not incoming:
+                self._print_msg('You got disconnected, Foo! Get back in there!',
+                                'green')
+                break
+            if self.is_encrypted:
                 try:
                     # Decrypt if encrypted.
-                    incoming = self.s_decipher_incoming(incoming)
+                    incoming = self._decipher_incoming(incoming)
 
                 except:
                     # Fb if message not encrypted.
                     incoming = incoming.decode()
+            else:
+                incoming = incoming.decode()
 
-                self._print_msg(incoming, 'yellow')
-
-            except OSError:
-                print('Data transfer failed.')
-                break
+            self._print_msg(incoming, 'yellow')
 
         exit()
 
@@ -111,8 +115,12 @@ class RoomIO():
             print(f"\x1b[4;32;40m{str_data}\x1b[0m")
 
     def _msg_handler(self, msg):
+
+        # Send these commands as plaintext to server.
+        bypass = True
+
         if msg == 'status()' or msg == "exit()":
-            self._xmit(msg.encode(), self.cli_sock)
+            pass
 
         elif msg == 'sendfile()':
             f_xfer.sender_prompt(self.cli_sock)
@@ -131,23 +139,84 @@ class RoomIO():
             reply = pngsrvr.ping()
             self._print_msg(reply, 'green')
 
-        return msg
+        else:
+            # Do not send through plaintext.
+            bypass = False
 
-    def start(self, cli_sock):
+        return msg, bypass
+
+    def start(self, cli_sock, is_encrypted=True):
+        self.is_encrypted = is_encrypted
         self.cli_sock = cli_sock
         self.welcome()
-        receive_thread = Thread(target=self.receive).start()
-        send_thread = Thread(target=self.send).start()
+        receive_thread = Thread(target=self.receive)
+        receive_thread.start()
+        send_thread = Thread(target=self.send)
+        send_thread.start()
 
 
 if __name__ == "__main__":
 
-    host = input('-+- Enter hostname of server: ')
-    host = host or 'ubuntu'
+    parser = argparse.ArgumentParser(description='Lightweight encrypted chat.',
+                                     epilog='Going under...')
 
-    port = input('-+- Choose port: ')
-    port = port or '12222'
-    port = int(port)
+    parser.add_argument('-g',
+                        '--goober',
+                        help='Goober chat, or no encryption.',
+                        action='store_false',
+                        dest='is_encrypted')
+
+    addr_group = parser.add_mutually_exclusive_group()
+
+    addr_group.add_argument(
+        '-f',
+        '--full-address',
+        help='Input full address. eg: xxx.xxx.xxx.xxx:######',
+        action='store',
+        type=str,
+        dest='addr')
+    addr_group.add_argument(
+        '-H',
+        '--host',
+        help='Input host name or address. eg: xxx.xxx.xxx.xxx',
+        action='store',
+        type=str,
+        dest='host')
+
+    parser.add_argument('-P',
+                        '--port',
+                        help='Input port number.',
+                        action='store',
+                        type=int,
+                        dest='port')
+
+    args = parser.parse_args()
+
+    if not args.addr:
+        if not args.host:
+            host = input('-+- Enter hostname of server: ')
+            host = host or 'ubuntu'
+        else:
+            host = args.host
+            print(f'-+- Hostname: {host}')
+
+        if not args.port:
+            port = input('-+- Choose port: ')
+            port = port or '12222'
+            port = int(port)
+        else:
+            port = args.port
+            print(f'-+- Port: {port}')
+
+    # else:
+    #     try:
+    #         addr = args.addr
+    #         addr = addr.split(':')
+    #         host = addr[0]
+    #         port = int(addr[1])
+
+    #     except:
+    #         pass
 
     #TESTING#
     # host = '127.0.0.1'
@@ -165,10 +234,11 @@ if __name__ == "__main__":
     try:
         lock = Lock()
         cli_sock.connect((host, port))  # Connect to server addy.
-        channel.start(cli_sock)
+        channel.start(cli_sock, args.is_encrypted)
 
     except:
         # TODO: descriptive errors
         print("Connection not successful. Try again.")
-        cli_sock.shutdown()
+        # cli_sock.shutdown(socket.SHUT_RDWR)
         cli_sock.close()
+        exit()
