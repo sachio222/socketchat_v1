@@ -90,7 +90,7 @@ class RoomIO():
         """Transmit with thread locking."""
 
         with lock:
-            sending_sock.send(bytes_data)
+            self._xmit(bytes_data, sending_sock)
 
     def _decipher_incoming(self, bytes_data):
         """If encrypted, decipher, return string."""
