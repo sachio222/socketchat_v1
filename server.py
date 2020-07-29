@@ -110,7 +110,7 @@ def handle_client(client):
     broadcast(b'YO', None,
               f'{nicks[client].decode()} has left the chat.'.encode(), 'all')
 
-    client.shutdown()
+    client.shutdown(socket.SHUT_RDWR)
     client.close()
 
     # Clean up
