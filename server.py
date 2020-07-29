@@ -1,5 +1,4 @@
 #!/usr/bin/ python3
-
 """SOCKETCHAT by J. Krajewski, 2020, All rights reserved.
 
 -+- Spin up server.py, connect to it with client.py and chat via the cli.
@@ -47,11 +46,11 @@ def handle_client(client):
             nick = nicks[client]
 
         except socket.timeout as err:
-             print(f"-=- socket.timeout: {err}")
-             break
+            print(f"-=- socket.timeout: {err}")
+            break
         except socket.error as err:
-             print(f"-=- socket.error: {err}")
-             break
+            print(f"-=- socket.error: {err}")
+            break
 
         if not data or data == b'exit()':
             break
@@ -165,7 +164,7 @@ if __name__ == '__main__':
     serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Make object
 
     # Instantiate transfer Class
-    f_xfer = xfer.FileXfer(serv)
+    f_xfer = xfer.FileXfer()
 
     host = socket.gethostname()
     try:

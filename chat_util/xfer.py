@@ -8,7 +8,7 @@ import socket
 class FileXfer():
     """For file transfer, sending and receiving."""
 
-    def __init__(self, client_socket):
+    def __init__(self):
         pass
 
     def sender_prompt(self, client_socket, path='', recip=''):
@@ -150,7 +150,7 @@ class FileXfer():
 
         if nick:
             return True
-            
+
         else:
             return False
 
