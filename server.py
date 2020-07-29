@@ -25,7 +25,7 @@ def accept_incoming_connections():
         nick = client.recv(BUFFSIZE)
         nicks[client] = nick
         addresses[client] = addr
-        client.settimeout(900.0)
+        client.settimeout(None)
 
         # Announcce new guest
         announce_msg = f"{nick.decode()} is in the house! "
@@ -110,7 +110,7 @@ def handle_client(client):
     broadcast(b'YO', None,
               f'{nicks[client].decode()} has left the chat.'.encode(), 'all')
 
-    client.shutdown()
+    client.shutdown(socket.SHUT_RDWR)
     client.close()
 
     # Clean up
@@ -187,6 +187,7 @@ if __name__ == '__main__':
         print("Port not available. Try again in a minute.")
         exit()
 
+    serv.settimeout(None)
     serv.listen(MAX_CNXN)  # listen for data.
     print("-+- Waiting for connections...")
 
@@ -194,5 +195,5 @@ if __name__ == '__main__':
     incoming_thread.start()
 
     incoming_thread.join()
-    serv.shutdown()
+    serv.shutdown(socket.SHUT_RDWR)
     serv.close()
