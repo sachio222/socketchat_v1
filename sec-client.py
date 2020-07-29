@@ -62,6 +62,8 @@ def receive():
                 incoming = incoming.decode()  # Fallback
 
             if not incoming:
+                print('You got disconnected, Foo! Get back in there!')
+                exit()
                 break
 
             # Clear line when new text comes in (otherwise it'll glitch out.)
