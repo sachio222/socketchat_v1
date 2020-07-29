@@ -195,5 +195,5 @@ if __name__ == '__main__':
     incoming_thread.start()
 
     incoming_thread.join()
-    serv.shutdown()
+    serv.shutdown(socket.SHUT_RDWR)
     serv.close()
