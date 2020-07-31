@@ -3,7 +3,9 @@
 import os
 import time
 import socket
+from threading import Lock
 
+lock = Lock()
 
 class FileXfer():
     """For file transfer, sending and receiving."""
