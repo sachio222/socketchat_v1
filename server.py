@@ -187,8 +187,11 @@ if __name__ == '__main__':
         exit()
 
     serv.settimeout(None)
-    serv.listen(MAX_CNXN)  # listen for data.
     print("-+- Waiting for connections...")
+    
+    while True:
+        serv.listen(MAX_CNXN)  # listen for data.
+    
 
     incoming_thread = Thread(target=accept_incoming_connections)
     incoming_thread.start()
