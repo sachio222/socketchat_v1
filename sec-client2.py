@@ -51,7 +51,7 @@ class RoomIO():
             else:
                 self.msg = self.msg.encode()
 
-            self._xmit_with_lock(self.msg, self.cli_sock)
+            self._xmit(self.msg, self.cli_sock)
 
         # self.cli_sock.shutdown(socket.SHUT_RDWR)
         self.cli_sock.close()
@@ -83,14 +83,12 @@ class RoomIO():
 
         exit()
 
-    def _xmit(self, bytes_data, sending_sock):
-        sending_sock.send(bytes_data)
-
-    def _xmit_with_lock(self, bytes_data, sending_sock):
-        """Transmit with thread locking."""
-
-        with lock:
-            self._xmit(bytes_data, sending_sock)
+    def _xmit(self, bytes_data, sending_sock, locked=False):
+        if not locked:
+            sending_sock.send(bytes_data)
+        else:
+             with lock:
+                 sending_sock.send(bytes_data)
 
     def _decipher_incoming(self, bytes_data):
         """If encrypted, decipher, return string."""
