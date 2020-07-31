@@ -148,7 +148,7 @@ def broadcast(send_from_nick, addr, msg_from_client, target='others'):
 
 
 BUFFSIZE = 4096
-MAX_CNXN = 10
+MAX_CNXN = 5
 
 addresses = {}
 nicks = {}
@@ -189,13 +189,11 @@ if __name__ == '__main__':
     serv.settimeout(None)
     print("-+- Waiting for connections...")
     
-    while True:
-        serv.listen(MAX_CNXN)  # listen for data.
+    serv.listen(MAX_CNXN)  # listen for data.
     
 
     incoming_thread = Thread(target=accept_incoming_connections)
     incoming_thread.start()
 
     incoming_thread.join()
-    serv.shutdown(socket.SHUT_RDWR)
     serv.close()

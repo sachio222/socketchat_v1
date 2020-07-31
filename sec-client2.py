@@ -239,6 +239,6 @@ if __name__ == "__main__":
     except:
         # TODO: descriptive errors
         print("Connection not successful. Try again.")
-        # cli_sock.shutdown(socket.SHUT_RDWR)
+        cli_sock.shutdown(1)
         cli_sock.close()
         exit()
