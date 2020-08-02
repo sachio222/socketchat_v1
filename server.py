@@ -9,6 +9,7 @@ For encrypted chat, use sec-client.py (requires addl libraries).
 
 import os
 import socket
+import sys
 from threading import Thread
 from chat_util import room, xfer
 
@@ -179,19 +180,20 @@ if __name__ == '__main__':
     #-- use last cmd line arg as port #
     port = 12222 if len(sys.argv) < 2 else sys.argv[-1]
     port = int(input('-+- Choose port: ')) if not port.isdigit() else int(port)
+    print(f'-+- Host Port: {port}')
 
     try:
         serv.bind((host, port))  # bind to host as socket server.
     except:
         #TESTING
-        print("Port not available. Try again in a minute.")
+        print(f'Port {port} not available. Try again in a minute.')
         exit()
 
     serv.settimeout(None)
     print("-+- Waiting for connections...")
-    
+
     serv.listen(MAX_CNXN)  # listen for data.
-    
+
 
     incoming_thread = Thread(target=accept_incoming_connections)
     incoming_thread.start()
