@@ -7,6 +7,7 @@
 For encrypted chat, use sec-client.py (requires addl libraries).
 """
 
+import os
 import socket
 from threading import Thread
 from chat_util import room, xfer
@@ -174,10 +175,10 @@ if __name__ == '__main__':
 
     print(f'-+- Starting server on host: {host}')
     print(f'-+- Host IP: {ip}')
-    port = input('-+- Choose port: ')
 
-    port = port or 12222
-    port = int(port)
+    #-- use last cmd line arg as port #
+    port = 12222 if len(sys.argv) < 2 else sys.argv[-1]
+    port = int(input('-+- Choose port: ')) if not port.isdigit() else int(port)
 
     try:
         serv.bind((host, port))  # bind to host as socket server.
