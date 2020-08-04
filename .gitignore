@@ -4,6 +4,7 @@ encryption/__pycache__/
 __pycache__/
 <<<<<<< HEAD
 tmp/
+venv
 =======
 .DS_Store
 ._DS_Store
