@@ -8,6 +8,7 @@ For encrypted chat, use sec-client.py (requires addl libraries).
 """
 
 import socket
+import struct
 from threading import Thread
 from chat_util import room, xfer
 
@@ -42,6 +43,7 @@ def handle_client(client):
     while True:
         try:
             data = client.recv(BUFFSIZE)  # Store incoming as data.
+
             addr = addresses[client]
             nick = nicks[client]
 
@@ -165,7 +167,6 @@ if __name__ == '__main__':
 
     # Instantiate transfer Class
     f_xfer = xfer.FileXfer()
-
     host = socket.gethostname()
     try:
         ip = socket.gethostbyname(host)

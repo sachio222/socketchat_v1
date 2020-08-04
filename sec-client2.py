@@ -9,6 +9,7 @@
 import os
 import sys
 import time
+import struct
 import socket
 import argparse
 from threading import Thread, Lock
@@ -40,6 +41,8 @@ class RoomIO():
         while self.msg != 'exit()':
 
             self.msg = input('')
+            # self.msg_len = len(self.msg.encode('utf-8'))
+            # Todo check if less than self.BFFR
 
             self.msg, bypass_e = self._msg_handler(self.msg)
 
@@ -51,6 +54,7 @@ class RoomIO():
             else:
                 self.msg = self.msg.encode()
 
+            # All outgoing transmissions are sent here
             self._xmit(self.msg, self.cli_sock)
 
         # self.cli_sock.shutdown(socket.SHUT_RDWR)
@@ -59,9 +63,9 @@ class RoomIO():
         exit()
 
     def receive(self):
-
         while True:
-            # Incoming!!
+
+            # Incoming data is captured here.
             incoming = self.cli_sock.recv(self.BFFR)
 
             if not incoming:
@@ -83,12 +87,35 @@ class RoomIO():
 
         exit()
 
+    def _read_n_bytes(self, socket, n):
+        """ Read n bytes from socket.
+            Raise RuntimeError if the connection closed before
+            n bytes were read.
+        """
+
+        buff = ''
+        while n > 0:
+            data = socket.recv(n)
+            if data == '':
+                raise RuntimeError('unexpected connection close')
+            buff += data
+            n -= len(data)
+        return buff
+
     def _xmit(self, bytes_data, sending_sock, locked=False):
+        msg_str = bytes_data.decode()
+        msg_len = struct.pack('>L', len(bytes_data))
+        print(msg_len)
+        unpack = struct.unpack('>L', msg_len)
+        print(unpack)
+
+        pkg = f'{msg_len}{msg_str}'.encode()
+
         if not locked:
-            sending_sock.send(bytes_data)
+            sending_sock.sendall(pkg)
         else:
              with lock:
-                 sending_sock.send(bytes_data)
+                 sending_sock.sendall(msg_len)
 
     def _decipher_incoming(self, bytes_data):
         """If encrypted, decipher, return string."""

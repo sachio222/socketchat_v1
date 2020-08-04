@@ -86,7 +86,7 @@ class FileXfer():
                     print(bytes_recd)
                     print(data)
                     if data == b'':
-                        raise RuntimeError("socket connection broken")
+                        raise RuntimeError("-x- Socket connection broken")
 
         except ValueError:
             pass
