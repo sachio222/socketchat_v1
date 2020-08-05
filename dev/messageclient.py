@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import os
 import sys
 import socket
 from threading import Thread, Lock
@@ -28,9 +29,9 @@ class Client():
             else:
                 msg = ''
 
-            self.pack_n_send(typ_pfx, msg)
+            self.pack_n_send(serv_sock, typ_pfx, msg)
             
-    def pack_n_send(self, typ_pfx, msg):
+    def pack_n_send(self, sock, typ_pfx, msg):
         #1
         """Called by Sender. Adds message type, length prefixes and sends
         
@@ -44,7 +45,7 @@ class Client():
         len_pfx = len(msg)
         len_pfx = str(len_pfx).rjust(4, '0')
         packed_msg = f'{typ_pfx}{len_pfx}{msg}'
-        serv_sock.send(packed_msg.encode())
+        sock.send(packed_msg.encode())
             
     def receiver(self):
         #1
@@ -83,6 +84,9 @@ class Client():
         elif typ_pfx == 'U':
             # Does user exist?
             self._u_hndlr()
+        elif typ_pfx == 'X':
+            # Transfer file.
+            self._x_hndlr()
         else:
             print('-x- Unknown message type error.')
 
@@ -94,16 +98,15 @@ class Client():
 
     def _f_hndlr(self):
         #0
-        """File incoming. Prompts to accept or reject. Sends response."""
+        """File Recipient. Prompts to accept or reject. Sends response."""
         
         # Incoming filename and filesize.
-        file_details = self.unpack_msg()
-        print(file_details)
+        self.filesize = self.unpack_msg()    
+        print(self.filesize.decode())
         print('-?- Do you want to accept this file? (Y/N)') #  TODO <-- come from server
-
         choice = input('>>')
         # print("Sending here, ths is fine")
-        self.pack_n_send('A', choice)
+        self.pack_n_send(serv_sock, 'A', choice)
 
         # Accept file
         if choice == 'n':
@@ -120,7 +123,7 @@ class Client():
     
     def _a_hndlr(self):
         #0
-        """Incoming file sending response from recipient. Yes or no"""
+        """Recipient Acceptance. Yes or no"""
 
         choice = self.unpack_msg()
         print(choice)
@@ -128,22 +131,39 @@ class Client():
         if choice.decode().lower() == 'y':
             print('sending')
             with open('image.jpg', 'rb') as f:
+                serv_sock.send(b'X')
                 serv_sock.sendfile(f, 0)
         elif choice.lower() == 'n':
-            self.pack_n_send('M', '-=- Transfer Cancelled.')
+            self.pack_n_send(serv_sock, 'M', '-=- Transfer Cancelled.')
 
     def _u_hndlr(self):
-        print('INCOMING USER MATCH!!!')
+        """Receives server response from user lookup"""
+
         user_exists = self.unpack_msg().decode()
+        print("-=- Checking recipient...")
+        print(user_exists)
 
         if user_exists:
-            print('user exists so...')
-            print('I can see this line, no problem.')
-            confirm = input('-=- Send file: (Y/N)')
-
-            self.pack_n_send('F', 'filename.jpg | 523Kb')
+            self.filesize = self.get_filesize('image.jpg', serv_sock)
+            msg = f"{self.filesize}"
+            self.pack_n_send(serv_sock, 'F', msg)
         else:
             print("User does not exist. Try again or type 'cancel'")
+            return
+        
+    def _x_hndlr(self):
+
+        """File sender. Transfer handler."""
+
+        print("Filetransfer dawg!")
+        chunk = serv_sock.recv(BFFR)
+        bytes_recd = len(chunk)
+
+        with open('image[2].png', 'wb') as f:
+            while bytes_recd < 78223:
+                f.write(chunk)
+                chunk = serv_sock.recv(BFFR)
+                bytes_recd += len(chunk)
 
     def inp_ctrl_handler(self, msg):
         #0
@@ -153,11 +173,11 @@ class Client():
 
         if msg == '/sendfile':
             # For sending file. Call send dialog.
-            self.pack_n_send('M', '/sendfile')
+            self.pack_n_send(serv_sock, 'M', '/sendfile')
             print('-=- Sending file')
             fn = input('-=- Choose file name: ')
             recip = input('-=- Choose recip: ')
-            self.pack_n_send('U', recip)        
+            self.pack_n_send(serv_sock, 'U', recip)        
 
     def _pfxtoint(self, client_cnxn, data, n=4):
         #1
@@ -182,8 +202,17 @@ class Client():
         sz_pfx = serv_sock.recv(4)
         buffer = self._pfxtoint(serv_sock, sz_pfx, 4)
         trim_msg = serv_sock.recv(buffer)
+        
 
         return trim_msg # As bytes
+
+    def get_filesize(self, path, sock):
+        """Calculates filesize of a path and sends integer."""
+
+        with open('image.jpg', 'rb') as f:
+            # self.filesize = os.path.getsize(f)
+            filesize = 78223 
+        return filesize
 
     def print_message(self, msg, style='yellow'):
         #1
@@ -221,8 +250,8 @@ if __name__ == "__main__":
     serv_sock = socket.socket()
     serv_sock.connect((host, port))
 
-    print(f'-=- Connected to {host}')
-    name = serv_sock.recv(BFFR)
-    print(name.decode())
+    print(f'-+- Connected to {host}')
+    # name = serv_sock.recv(BFFR)
+    # print(name.decode())
 
     channel.start()
