@@ -32,7 +32,15 @@ class Client():
             
     def pack_n_send(self, typ_pfx, msg):
         #1
-        """Called by Sender. Adds message type, length prefixes and sends"""
+        """Called by Sender. Adds message type, length prefixes and sends
+        
+        typ_pfx: (Type prefix) 1 byte. tells recipient how to handle message. 
+        len_pfx: (Length prefix) 4 bytes. tells socket when to stop receiving message.
+
+        Example packet:
+            M0005Hello - Message type, 5 characters, "Hello"
+        """
+        
         len_pfx = len(msg)
         len_pfx = str(len_pfx).rjust(4, '0')
         packed_msg = f'{typ_pfx}{len_pfx}{msg}'
