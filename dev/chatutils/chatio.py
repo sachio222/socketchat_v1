@@ -5,11 +5,26 @@ from threading import Thread
 
 
 class ChatIO():
-
     def __init__(self):
-        pass
+        self.LEN_PFX_LEN = 4
 
-    def unpack_msg(self):
+    def pack_n_send(self, sock, typ_pfx, msg):
+        #1
+        """Called by Sender. Adds message type, length prefixes and sends
+        
+        typ_pfx: (Type prefix) 1 byte. tells recipient how to handle message. 
+        len_pfx: (Length prefix) 4 bytes. tells socket when to stop receiving message.
+
+        Example packet:
+            M0005Hello - Message type, 5 characters, "Hello"
+        """
+
+        len_pfx = len(msg)
+        len_pfx = str(len_pfx).rjust(self.LEN_PFX_LEN, '0')
+        packed_msg = f'{typ_pfx}{len_pfx}{msg}'
+        sock.send(packed_msg.encode())
+
+    def unpack_msg(self, sock):
         #1
         """Unpacks prefix for file size, and returns trimmed message as bytes.
         
@@ -19,9 +34,9 @@ class ChatIO():
                 inputs. 
         """
 
-        sz_pfx = serv_sock.recv(4)
-        buffer = self._pfxtoint(serv_sock, sz_pfx, 4)
-        trim_msg = serv_sock.recv(buffer)
+        sz_pfx = sock.recv(self.LEN_PFX_LEN)
+        buffer = self._pfxtoint(sock, sz_pfx, n=self.LEN_PFX_LEN)
+        trim_msg = sock.recv(buffer)
 
         return trim_msg  # As bytes
 
@@ -46,18 +61,3 @@ class ChatIO():
 
         print(f'\r{msg}')
 
-    def pack_n_send(self, sock, typ_pfx, msg):
-        #1
-        """Called by Sender. Adds message type, length prefixes and sends
-        
-        typ_pfx: (Type prefix) 1 byte. tells recipient how to handle message. 
-        len_pfx: (Length prefix) 4 bytes. tells socket when to stop receiving message.
-
-        Example packet:
-            M0005Hello - Message type, 5 characters, "Hello"
-        """
-
-        len_pfx = len(msg)
-        len_pfx = str(len_pfx).rjust(4, '0')
-        packed_msg = f'{typ_pfx}{len_pfx}{msg}'
-        sock.send(packed_msg.encode())
