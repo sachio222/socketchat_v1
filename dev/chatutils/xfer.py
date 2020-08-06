@@ -2,7 +2,7 @@ import os
 from .chatio import ChatIO
 
 
-class FileXfer():
+class FileXfer(ChatIO):
     """FileXfer 2.0 - For file transfer, sending and receiving."""
 
     def __init__(self):
