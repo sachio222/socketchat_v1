@@ -7,12 +7,13 @@ import sys
 import socket
 from threading import Thread
 from chatutils.xfer import FileXfer
+from chatutils.chatio import ChatIO
 
 
-class Client():
+class Client(ChatIO):
 
     def __init__(self):
-        pass
+        super(Client, self).__init__()
 
     #===================== SENDING METHODS =====================#
     def sender(self):
