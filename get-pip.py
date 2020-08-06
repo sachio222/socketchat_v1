@@ -34,8 +34,10 @@ PY3 = sys.version_info[0] == 3
 if PY3:
     iterbytes = iter
 else:
+
     def iterbytes(buf):
         return (ord(byte) for byte in buf)
+
 
 try:
     from base64 import b85decode
@@ -61,15 +63,14 @@ except ImportError:
             except TypeError:
                 for j, c in enumerate(iterbytes(chunk)):
                     if _b85dec[c] is None:
-                        raise ValueError(
-                            'bad base85 character at position %d' % (i + j)
-                        )
+                        raise ValueError('bad base85 character at position %d' %
+                                         (i + j))
                 raise
             try:
                 out.append(packI(acc))
             except struct.error:
-                raise ValueError('base85 overflow in hunk starting at byte %d'
-                                 % i)
+                raise ValueError('base85 overflow in hunk starting at byte %d' %
+                                 i)
 
         result = b''.join(out)
         if padding:
@@ -87,6 +88,7 @@ def bootstrap(tmpdir=None):
     # Due to pip._internal.commands.commands_dict structure, a monkeypatch
     # seems the simplest workaround.
     install_parse_args = InstallCommand.parse_args
+
     def cert_parse_args(self, args):
         # If cert isn't specified in config or environment, we provide our
         # own certificate through defaults.
@@ -95,6 +97,7 @@ def bootstrap(tmpdir=None):
         if not self.parser.get_default_values().cert:
             self.parser.defaults["cert"] = cert_path  # calculated below
         return install_parse_args(self, args)
+
     InstallCommand.parse_args = cert_parse_args
 
     implicit_pip = True
@@ -23671,7 +23674,6 @@ Zt4IApigX0000000000q=8!@765Q*a4%nWWo~3|axZsfVr6b)Z)9n1XLB!fWpi|ME^v8JO928D0~7!N
 00;m<8~sq*2K?5g1ONcj5C8xw00000000000001_fm0_I0B~t=FJE?LZe(wAFLz~PWo~0{WNB_^b1!&
 bb#rBMUu0!wX>Mg?E^v8JO9ci10001X0d@iVbN~QAEEWI&00
 """
-
 
 if __name__ == "__main__":
     main()
