@@ -5,14 +5,17 @@ import time
 import socket
 from threading import Lock
 
+import chatio as ChatIO
+
 lock = Lock()
 
 
-class FileXfer():
+class FileXfer(ChatIO):
     """For file transfer, sending and receiving."""
 
     def __init__(self):
         pass
+        super(FileXfer, self).__init__()
 
     def sender_prompt(self, client_socket, path='', recip=''):
         """For the sender, takes in filepath and send confirmation.
