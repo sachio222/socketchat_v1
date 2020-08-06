@@ -17,6 +17,11 @@ class ChatIO():
 
         Example packet:
             M0005Hello - Message type, 5 characters, "Hello"
+            Then where:
+            >>> msg = M0003SUP # We'd get the following
+                msg[0] - Message type
+                msg[1:4] - Message length
+                msg[5:] - Message
         """
 
         len_pfx = len(msg)
