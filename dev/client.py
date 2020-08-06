@@ -1,9 +1,12 @@
 #!/usr/bin/python3
+"""Encryptochat 2.0
+"""
 
 import os
 import sys
 import socket
 from threading import Thread
+from chatutils.xfer import FileXfer
 
 
 class Client():
@@ -58,9 +61,11 @@ class Client():
 
         if msg == '/sendfile':
             # For sending file. Call send dialog.
+            path = None
+
             self.pack_n_send(serv_sock, 'C', '/sendfile')
-            print('-=- Sending file')
-            fn = input('-=- Choose file name: ')
+            xfer.sender_prompts()
+
             recip = input('-=- Choose recip: ')
             self.pack_n_send(serv_sock, 'U', recip)
 
@@ -122,8 +127,8 @@ class Client():
         """File Recipient. Prompts to accept or reject. Sends response."""
 
         # Incoming filename and filesize.
-        self.filesize = self.unpack_msg()
-        print(self.filesize.decode())
+        incoming_f_sz = self.unpack_msg()
+        print(incoming_f_sz.decode())
         print('-?- Do you want to accept this file? (Y/N)'
              )  #  TODO <-- come from server
         choice = input('>>')
@@ -166,8 +171,8 @@ class Client():
         print(user_exists)
 
         if user_exists:
-            self.filesize = self.get_filesize('image.jpg', serv_sock)
-            msg = f"{self.filesize}"
+            filesize = self.get_filesize('image.jpg', serv_sock)
+            msg = f"{filesize}"
             self.pack_n_send(serv_sock, 'F', msg)
         else:
             print("User does not exist. Try again or type 'cancel'")
@@ -211,9 +216,10 @@ class Client():
         """Calculates filesize of a path and sends integer."""
 
         with open('image.jpg', 'rb') as f:
+
             filesize = os.path.getsize(f)
             print(filesize)
-            breakpoint()
+            exit()
         return filesize
 
     def print_message(self, msg, style='yellow'):
@@ -248,6 +254,7 @@ if __name__ == "__main__":
     # DEBUG
     port = 1515
 
+    xfer = FileXfer()
     channel = Client()
 
     serv_sock = socket.socket()
