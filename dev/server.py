@@ -6,6 +6,7 @@ import time
 from threading import Thread
 
 import chatutils
+from chatutils.chatio import ChatIO
 
 BFFR = 4096
 sockets = {}
