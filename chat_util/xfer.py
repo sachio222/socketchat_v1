@@ -7,6 +7,7 @@ from threading import Lock
 
 lock = Lock()
 
+
 class FileXfer():
     """For file transfer, sending and receiving."""
 

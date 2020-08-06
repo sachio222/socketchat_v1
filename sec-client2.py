@@ -114,8 +114,8 @@ class RoomIO():
         if not locked:
             sending_sock.sendall(pkg)
         else:
-             with lock:
-                 sending_sock.sendall(msg_len)
+            with lock:
+                sending_sock.sendall(msg_len)
 
     def _decipher_incoming(self, bytes_data):
         """If encrypted, decipher, return string."""
