@@ -1,5 +1,7 @@
 import os
+from . import utils
 from .chatio import ChatIO
+
 
 
 class FileXfer(ChatIO):
@@ -8,14 +10,17 @@ class FileXfer(ChatIO):
     def __init__(self):
         super(FileXfer, self).__init__()
 
-    def sender_prompts(self, path=''):
+    def sender_prompts(self, path='', user=''):
         while True:
             path = self._get_path(path)
-
             if not path:
+                break
+            user = self._get_user(user)
+            if not user:
                 break
 
             break
+        return path, user
 
     def _get_path(self, path):
         """Validate if selected file exists. 
@@ -27,7 +32,7 @@ class FileXfer(ChatIO):
             path: (str or path??) a path to an existing file.
         """
 
-        print("-=- Send file to recipient. (Type 'cancel' at any time.)")
+        print("-=- Send file to recipient. (Type 'cancel' at any time to return to chat.)")
         while not os.path.exists(path):
             path = input("-=- Input filepath >> ")
 
@@ -44,22 +49,23 @@ class FileXfer(ChatIO):
 
         return path
 
-    def _get_recip(self, nick):
+    def _get_user(self, nick):
         """ Returns valid recipient for file send."""
 
         ### TODO: Finish this.
 
         while not self._valid_recip(nick):
-            nick = input("-+- Recipient's handle?: @")
-
+            
+            user = input('-=- Send to: @')
+            
             if self._user_did_cancel(nick):
-                nick = ''
+                nick = None
                 break
-
+            
             elif not self._valid_recip(nick):
                 print("x-x Maybe pick someone in this room?")
 
-        return nick
+        return user
 
     def _user_did_cancel(self, inp_str):
         """Returns true if inp_str is canceled, and shows message. """
@@ -70,3 +76,14 @@ class FileXfer(ChatIO):
 
         else:
             return False
+
+    def write_to_path(self, chunk, path):
+        # Dynamically set socket size.
+        main, ext = utils.split_path_ext(path)
+        # Open socket
+        print("Receiving dawg!")
+        if os.path.exists(path):
+            path = f"{main}(1).{ext}"
+
+        with open(path, 'wb') as f:
+            f.write(chunk)

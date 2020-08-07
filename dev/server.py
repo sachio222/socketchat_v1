@@ -5,7 +5,7 @@ import sys
 import time
 from threading import Thread
 
-import chatutils
+import chatutils.utils as utils
 from chatutils.chatio import ChatIO
 
 BFFR = 4096
@@ -187,7 +187,7 @@ try:
     sock.bind(addy)
 except Exception as e:
     print(f'-x- {e}')
-    chatutils.countdown(90)
+    utils.countdown(90)
 
 sock.listen(5)
 print('-+- Listening...')
