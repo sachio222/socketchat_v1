@@ -6,6 +6,8 @@ import os
 import sys
 import socket
 from threading import Thread
+
+from chatutils import utils
 from chatutils.xfer import FileXfer
 from chatutils.chatio import ChatIO
 
@@ -45,18 +47,22 @@ class Client(ChatIO):
         if type(msg) == bytes:
             msg.decode()
 
-        if msg == '/sendfile':
+        if msg == '/help':
+            # Print help menu
+            path = 'config/helptxt.txt'
+            utils.print_from_file(path)
+            
+        elif msg == '/sendfile':
             # For sending file. Call send dialog.
             path = None
 
             self.pack_n_send(serv_sock, 'C', '/sendfile')
-            xfer.sender_prompts()
+            path, user= xfer.sender_prompts()
+            self.pack_n_send(serv_sock, 'U', user)
 
-            recip = input('-=- Choose recip: ')
-            self.pack_n_send(serv_sock, 'U', recip)
 
         else:
-            print('Command not recognized.')
+            print('-!- Command not recognized.')
 
     #===================== RECEIVING METHODS =====================#
     def receiver(self):
@@ -144,9 +150,11 @@ class Client(ChatIO):
         if choice.decode().lower() == 'y':
             print('sending')
             with open('image.jpg', 'rb') as f:
+                # Sends message to send file.
                 serv_sock.send(b'X')
                 serv_sock.sendfile(f, 0)
         elif choice.lower() == 'n':
+                # Sends message that file transfer is over.
             self.pack_n_send(serv_sock, 'M', '-=- Transfer Cancelled.')
 
     def _u_hndlr(self):
@@ -168,15 +176,16 @@ class Client(ChatIO):
     def _x_hndlr(self):
         """File sender. Transfer handler."""
 
-        print("Filetransfer dawg!")
         chunk = serv_sock.recv(BFFR)
-        bytes_recd = len(chunk)
+        
+        xfer.write_to_path(chunk, 'file(2).txt')
+        # bytes_recd = len(chunk)
 
-        with open('image[2].png', 'wb') as f:
-            while bytes_recd < 78223:
-                f.write(chunk)
-                chunk = serv_sock.recv(BFFR)
-                bytes_recd += len(chunk)
+        # with open('image[2].jpg', 'wb') as f:
+        #     while bytes_recd < 78223:
+        #         f.write(chunk)
+        #         chunk = serv_sock.recv(BFFR)
+        #         bytes_recd += len(chunk)
 
     def start(self):
         self.t1 = Thread(target=self.receiver)
