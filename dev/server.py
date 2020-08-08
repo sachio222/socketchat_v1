@@ -65,12 +65,13 @@ class Server(ChatIO):
 
         # U-type handler
         if data[0] == 85: # 85 = U
-            print('raw U data', data)
 
-            user = self.remove_pfx(data) # Clean already recv'd data.
-            print('user', user)
-            user_exists, _ = self.lookup_user(client_cnxn, user)
+            user_bytes = self.remove_pfx(data) # Clean already recv'd data.
 
+            # Check for user.
+            user_exists, _ = self.lookup_user(client_cnxn, user_bytes)
+
+            # Send U type to sender.
             self.pack_n_send(client_cnxn, 'U', str(user_exists))
 
         else:
@@ -84,26 +85,24 @@ class Server(ChatIO):
                         pass
         
         # General print to server.
-        print(data)
+            print('>> ', data)
 
 
-    def recv_pkt(self, client_cnxn, data, n):
-        return int(data[:n])
 
+    # def file_confirm_prompt(self, client_cnxn, data):
+    #     """Checks if user exists in user dict."""
+    
+    #     data = data[5:]  # Remove prefixes.
+    #     user_exists, user_addr = self.lookup_user(client_cnxn, data)
 
-    def file_confirm_prompt(self, client_cnxn, data):
-        """Checks if user exists in user dict."""
+    #     if user_exists:
+    #         EXISTS_MSG = '-=- Waiting for user to accept.'
+    #         data = EXISTS_MSG
+    #         user_addr = user_addr
+    #     else:
+    #         data = ''
 
-        data = data[5:]  # Remove prefixes.
-        user_exists, user_addr = self.lookup_user(client_cnxn, data)
-        if user_exists:
-            EXISTS_MSG = '-=- Waiting for user to accept.'
-            data = EXISTS_MSG
-            user_addr = user_addr
-        else:
-            data = ''
-
-        return data
+    #     return data
 
 
     def lookup_user(self, sock, user_query):
@@ -138,7 +137,7 @@ class Server(ChatIO):
                     break
 
                 else:
-                    print(f'User {user_query} not found.') 
+                    print(f'{user_query} not found.') 
         
         print(f'match: {match}')
         return match, user_addr
@@ -166,6 +165,9 @@ class Server(ChatIO):
         # TODO: Fix formatting.
         return user_name
 
+    # def recv_pkt(self, client_cnxn, data, n):
+    #     return int(data[:n])
+
 if __name__ == "__main__":
 
     server = Server()
@@ -180,5 +182,5 @@ if __name__ == "__main__":
         utils.countdown(90)
 
     sock.listen(5)
-    print('-+- Listening...')
+    print(f'-+- Listening...')
     Thread(target=server.accepting).start()

@@ -57,7 +57,8 @@ class Client(ChatIO):
             path = None
 
             # Send as controller file to server and recipient.
-            self.pack_n_send(serv_sock, 'C', '/sendfile')
+            # self.pack_n_send(serv_sock, 'C', '/sendfile')
+
             path, user = xfer.sender_prompts(serv_sock)
 
             # For username lookup.
@@ -170,7 +171,13 @@ class Client(ChatIO):
 
         """
 
-        print(self.unpack_msg(serv_sock).decode())
+        user_found = self.unpack_msg(serv_sock).decode()
+        if user_found == "False":
+            user = input('-=- Send to >> @')
+            self.pack_n_send(serv_sock, 'U', user)
+
+        else:
+            xfer.recip_prompt(serv_sock)
         
 
         # user_exists = self.unpack_msg(serv_sock).decode()
