@@ -5,6 +5,7 @@ from threading import Thread
 
 
 class ChatIO():
+
     def __init__(self):
         self.LEN_PFX_LEN = 4
 
@@ -57,7 +58,7 @@ class ChatIO():
         buffer = self._pfxtoint(sock, sz_pfx, n=self.LEN_PFX_LEN)
         trim_msg = sock.recv(buffer)
 
-        return trim_msg # As bytes
+        return trim_msg  # As bytes
 
     def _pfxtoint(self, client_cnxn, data, n=4):
         #1
@@ -79,7 +80,6 @@ class ChatIO():
             msg = msg.decode()
 
         print(f'\r{msg}')
-
 
     def remove_pfx(self, data, n=5):
         # Accepts bytes input, chops off prefix and returns plain message as bytes.

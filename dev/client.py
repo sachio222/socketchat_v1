@@ -43,7 +43,7 @@ class Client(ChatIO):
             else:
                 self.msg = ''
 
-            self.message_type = 'M' # Always reset to default.
+            self.message_type = 'M'  # Always reset to default.
 
     def inp_ctrl_handler(self, msg):
         #0
@@ -55,7 +55,7 @@ class Client(ChatIO):
             # Print help menu
             path = 'config/helptxt.txt'
             utils.print_from_file(path)
-            
+
         elif msg == '/sendfile' or msg == '/sf':
             # For sending file. Call send dialog.
             self.path, self.filesize = xfer.sender_prompt()
@@ -136,8 +136,10 @@ class Client(ChatIO):
 
         elif user_exists == "True":
             # Prompt recipient.
-            xfer.recip_prompt(serv_sock, filename=self.path, filesize=self.filesize)
-            self.message_type = 'M' # Reset message type.
+            xfer.recip_prompt(serv_sock,
+                              filename=self.path,
+                              filesize=self.filesize)
+            self.message_type = 'M'  # Reset message type.
 
     def _f_hndlr(self):
         """File Recipient. Prompts to accept or reject. Sends response."""
@@ -146,7 +148,7 @@ class Client(ChatIO):
         recip_prompt = self.unpack_msg(serv_sock).decode()
         self.message_type = "A"
         print(recip_prompt)
-        # Send answer as type A, user sends response back to server. 
+        # Send answer as type A, user sends response back to server.
 
     def _a_hndlr(self):
         """Sender side. Answer from recipient. Y or N for filesend."""
@@ -156,7 +158,8 @@ class Client(ChatIO):
 
         # Resend if choice is nonsense.
         if recip_choice.lower() != 'y' and recip_choice.lower() != 'n':
-            self.pack_n_send(serv_sock,'F', 'Choice must be Y or N. Try again...')
+            self.pack_n_send(serv_sock, 'F',
+                             'Choice must be Y or N. Try again...')
 
         elif recip_choice.lower() == 'y':
             # Sender
@@ -171,20 +174,32 @@ class Client(ChatIO):
 
     def _x_hndlr(self):
         """File sender. Transfer handler."""
-        
-        filesize = xfer.unpack_msg(serv_sock)
-        print(filesize)
-        
-        # chunk = serv_sock.recv(BFFR)
-        
-        # xfer.write_to_path(chunk, 'file(2).txt')
-        # bytes_recd = len(chunk)
+        XBFFR = 4086
 
-        # with open('image[2].jpg', 'wb') as f:
-        #     while bytes_recd < 78223:
-        #         f.write(chunk)
-        #         chunk = serv_sock.recv(BFFR)
-        #         bytes_recd += len(chunk)
+        file_info = xfer.unpack_msg(serv_sock).decode()
+        file_info = file_info.split('::')  # Arbitrary splitter.
+        filesize = int(file_info[0])
+
+        path = file_info[1]
+        path = xfer.new_path(path)
+
+        uneven_buffer = filesize % XBFFR
+
+        print("-=- Receiving dawg!")
+
+        chunk = serv_sock.recv(uneven_buffer)
+        with open(path, 'wb') as f:
+            f.write(chunk)
+
+        bytes_recd = uneven_buffer  # start count
+
+        while bytes_recd < filesize:
+            chunk = serv_sock.recv(uneven_buffer)
+            with open(path, 'ab') as f:
+                f.write(chunk)
+            bytes_recd += len(chunk)
+
+        print(f"-=- {filesize}bytes received.")
 
     def start(self):
         self.t1 = Thread(target=self.receiver)
