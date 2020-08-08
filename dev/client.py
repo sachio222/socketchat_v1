@@ -43,6 +43,7 @@ class Client(ChatIO):
             else:
                 self.msg = ''
 
+            self.message_type = 'M' # Always reset to default.
 
     def inp_ctrl_handler(self, msg):
         #0
@@ -50,15 +51,15 @@ class Client(ChatIO):
         if type(msg) == bytes:
             msg.decode()
 
-        if msg == '/help':
+        if msg == '/help' or msg == '/h':
             # Print help menu
             path = 'config/helptxt.txt'
             utils.print_from_file(path)
             
         elif msg == '/sendfile' or msg == '/sf':
             # For sending file. Call send dialog.
-            path, self.filesize = xfer.sender_prompt()
-            if path:
+            self.path, self.filesize = xfer.sender_prompt()
+            if self.path:
                 user = xfer.user_prompt(serv_sock)
 
         else:
@@ -90,21 +91,18 @@ class Client(ChatIO):
         if typ_pfx == 'M':
             # Standard message type.
             self._m_hndlr()
-        elif typ_pfx == 'F':
-            # For sending files.
-            self._f_hndlr()
         elif typ_pfx == 'C':
             # For controller input.
             self._c_hndlr()
-        elif typ_pfx == 'A':
-            # For dialog messages for file sending.
-            self._a_hndlr()
         elif typ_pfx == 'U':
             # User Found
             self._u_hndlr()
-        elif typ_pfx == 'V':
-            # User Found
-            self._v_hndlr()
+        elif typ_pfx == 'F':
+            # For sending files.
+            self._f_hndlr()
+        elif typ_pfx == 'A':
+            # Raises dialog for chosen recipient.
+            self._a_hndlr()
         elif typ_pfx == 'X':
             # Transfer file.
             self._x_hndlr()
@@ -112,57 +110,16 @@ class Client(ChatIO):
             print('-x- Unknown message type error.')
 
     def _m_hndlr(self):
-        #0
         """Standard message. Unpacks message, and prints to own screen."""
         trim_msg = self.unpack_msg(serv_sock)
         self.print_message(trim_msg)
 
-    def _f_hndlr(self):
-        """File Recipient. Prompts to accept or reject. Sends response."""
-
-        # Incoming filename and filesize.
-        incoming_prompt = self.unpack_msg(serv_sock)
-        print(incoming_prompt.decode())
-          #  TODO <-- come from server
-        self.message_type = "A"
-        # print("Sending here, ths is fine")
-        # self.pack_n_send(serv_sock, 'A', choice)
-
-        # Accept file
-        # if choice == 'n':
-        #     pass
-        # elif choice == 'y':
-        #     # Bring in the file!!
-        #     pass
-
     def _c_hndlr(self):
-        #0
         """Control messages from another user. Not displayed."""
-
-        trim_msg = self.unpack_msg(serv_sock)
-
-    def _a_hndlr(self):
-        """Recipient Acceptance. Yes or no"""
-
-        choice = self.unpack_msg(serv_sock)
-        print(choice)
-        if choice.lower() != 'y' or choice.lower() != 'n':
-            self.pack_n_send(serv_sock,'F', 'Choice must be Y or N. Try again...')
-        
-        
-        
-        # if choice.decode().lower() == 'y':
-        #     print('sending')
-        #     with open('image.jpg', 'rb') as f:
-        #         # Sends message to send file.
-        #         serv_sock.send(b'X')
-        #         serv_sock.sendfile(f, 0)
-        # elif choice.lower() == 'n':
-        #         # Sends message that file transfer is over.
-        #     self.pack_n_send(serv_sock, 'M', '-=- Transfer Cancelled.')
+        self.unpack_msg(serv_sock)
 
     def _u_hndlr(self):
-        """Receives server response from user lookup.
+        """Receives server response from user lookup. If False, rerun.
         
         After the server looks up a user, it sends its response as a U-type.
         The U type message either prompts the recipient if the exist, or asks
@@ -170,37 +127,53 @@ class Client(ChatIO):
 
         """
 
+        # Reply from server.
         user_exists = self.unpack_msg(serv_sock).decode()
 
         if user_exists == "False":
-            print('-!- They aint here. Try again. \n-=- Send to >> @', end='')
+            print("-!- They're not here. Try again. \n-=- Send to >> @", end='')
             self.message_type = 'U'
 
-        if user_exists == "True":
-            print('OK! Waiting for user to accept...')
-            # msg = f"{self.filesize}"
-            msg = '-?- Do you want to accept this file? (Y/N)'
-            self.pack_n_send(serv_sock, 'F', msg)
+        elif user_exists == "True":
+            # Prompt recipient.
+            xfer.recip_prompt(serv_sock, filename=self.path, filesize=self.filesize)
             self.message_type = 'M' # Reset message type.
 
-        # user_exists = self.unpack_msg(serv_sock).decode()
-        # print("-=- Checking recipient...")
-        # print(f'user exists: {user_exists}')
+    def _f_hndlr(self):
+        """File Recipient. Prompts to accept or reject. Sends response."""
 
-        # if user_exists:
-        #     # filesize = self.get_filesize('image.jpg', serv_sock)
-        #     filesize = 78404
-        # else:
-        #     print("User does not exist. Try again or type 'cancel'")
-        #     return
+        # Display prompt sent from xfer.recip_prompt.
+        recip_prompt = self.unpack_msg(serv_sock).decode()
+        self.message_type = "A"
+        print(recip_prompt)
+        # Send answer as type A, user sends response back to server. 
 
-    def _v_hndlr(self):
-        pass
+    def _a_hndlr(self):
+        """Sender side. Answer from recipient. Y or N for filesend."""
 
+        # Answer to prompt from F handler.
+        recip_choice = self.unpack_msg(serv_sock).decode()
+
+        print("recip choice is: ", recip_choice)
+
+        # Resend if choice is nonsense.
+        if recip_choice.lower() != 'y' or recip_choice.lower() != 'n':
+            self.pack_n_send(serv_sock,'F', 'Choice must be Y or N. Try again...')
+        elif recip_choice.lower() == 'y':
+            # Sender
+            print("Sending file...")
+
+            # Recipient
+            xfer.file_xfer(serv_sock, self.path, self.filesize)
+        elif recip_choice.lower() == 'n':
+            self.pack_n_send(serv_sock, 'M', '-=- Transfer Cancelled.')
+
+        self.message_type = 'M'
 
     def _x_hndlr(self):
         """File sender. Transfer handler."""
-
+        
+        filesize = xfer.unpack_msg(serv_sock)
         chunk = serv_sock.recv(BFFR)
         
         xfer.write_to_path(chunk, 'file(2).txt')

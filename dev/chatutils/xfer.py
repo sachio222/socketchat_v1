@@ -42,7 +42,13 @@ class FileXfer(ChatIO):
             filesize: (int) Size of incoming file in bytes.
         """
 
-        print('Here is your prompt to accept.')
+        print('OK! Waiting for user to accept...')
+
+        msg = f'User sending {filename} | {filesize} bytes\n-?- Do you want to accept this file? (Y/N)'
+        # Send as A type so message is routed to recip.
+        # TODO: Make so it routes only to Recip!
+        self.pack_n_send(sock, 'F', msg)
+
 
     def _get_file_info(self, path=''):
         """Validate if selected file exists, and get filesize.
@@ -98,6 +104,14 @@ class FileXfer(ChatIO):
 
         else:
             return False
+
+    def file_xfer(self, sock, path, filesize, recip=''):
+        try:
+            with open(path, 'rb') as f:
+                self.pack_n_send(sock, 'X', str(filesize))
+                sock.sendfile(f, 0)
+        except:
+            print('Unknown exception. I dunno whut u did.')
 
     def write_to_path(self, chunk, path):
         # Dynamically set socket size.
