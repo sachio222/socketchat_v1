@@ -57,7 +57,7 @@ class ChatIO():
         buffer = self._pfxtoint(sock, sz_pfx, n=self.LEN_PFX_LEN)
         trim_msg = sock.recv(buffer)
 
-        return trim_msg  # As bytes
+        return trim_msg # As bytes
 
     def _pfxtoint(self, client_cnxn, data, n=4):
         #1

@@ -65,14 +65,19 @@ class Server(ChatIO):
 
         # U-type handler
         if data[0] == 85: # 85 = U
-
+            
             user_bytes = self.remove_pfx(data) # Clean already recv'd data.
 
             # Check for user.
             user_exists, _ = self.lookup_user(client_cnxn, user_bytes)
 
             # Send U type to sender.
-            self.pack_n_send(client_cnxn, 'U', str(user_exists))
+            if not user_exists:
+                prompt = '-=- Send to >> @'
+                self.pack_n_send(client_cnxn, 'V', prompt)
+            else:
+                self.pack_n_send(client_cnxn, 'U', str(user_exists))
+
 
         else:
             for sock in sockets:
@@ -165,6 +170,9 @@ class Server(ChatIO):
         # TODO: Fix formatting.
         return user_name
 
+    def start(self):
+        Thread(target=self.accepting).start()
+
     # def recv_pkt(self, client_cnxn, data, n):
     #     return int(data[:n])
 
@@ -183,4 +191,4 @@ if __name__ == "__main__":
 
     sock.listen(5)
     print(f'-+- Listening...')
-    Thread(target=server.accepting).start()
+    server.start()
