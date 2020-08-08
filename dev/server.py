@@ -15,11 +15,12 @@ addrs_by_nick = {}
 
 sox = {}
 
+
 class Server(ChatIO):
+
     def __init__(self):
         super(Server, self).__init__()
         self.BFFR = 1
-
 
     def accepting(self):
         # Accept connections.
@@ -28,7 +29,6 @@ class Server(ChatIO):
             print(f'-+- Connected... to {client_addr}')
             sockets[client_cnxn] = client_addr  # Create cnxn:addr pairings.
             Thread(target=self.handle_clients, args=(client_cnxn,)).start()
-
 
     def handle_clients(self, client_cnxn):
         # Get username.
@@ -52,7 +52,6 @@ class Server(ChatIO):
 
             self.data_router(client_cnxn, data)
 
-
     def data_router(self, client_cnxn, data):
         # Server client communication codes.
 
@@ -64,7 +63,7 @@ class Server(ChatIO):
             self.unpack_msg(client_cnxn)
 
         # U-type handler
-        if data == b'U': # 85 = U
+        if data == b'U':  # 85 = U
             self._serv_u_hndlr(client_cnxn)
 
         else:
@@ -82,9 +81,9 @@ class Server(ChatIO):
 
                     except:
                         pass
-        
+
         # General print to server.
-            print('>> ', data.decode())
+        # print('>> ', data.decode())
 
     def _serv_u_hndlr(self, sock):
         """ handles user requests
@@ -127,7 +126,7 @@ class Server(ChatIO):
             user_query = user_query.decode()
         except:
             pass
-        
+
         for nick, addr in addrs_by_nick.items():
             if addr != sockets[sock]:  # Avoid self match.
 
@@ -136,13 +135,13 @@ class Server(ChatIO):
                     match = True
                     user_addr = addr
                     print(f'recip-addy: {user_addr}')
-                    
+
                     break
 
                 else:
                     match = False
-                    print(f'{user_query} not found.') 
-        
+                    print(f'{user_query} not found.')
+
         return match, user_addr
 
     def init_client_data(self, sock):
@@ -157,7 +156,8 @@ class Server(ChatIO):
 
             if user_name not in nicks_by_sock.values():
                 nicks_by_sock[sock] = user_name  # Create socket:nick pair.
-                addrs_by_nick[user_name] = sockets[sock]  # Create nick:addr pair.
+                addrs_by_nick[user_name] = sockets[
+                    sock]  # Create nick:addr pair.
                 unique = True
             else:
                 ERR = f"=!= They're already here! Pick something else:"

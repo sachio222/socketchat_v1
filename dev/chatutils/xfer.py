@@ -4,7 +4,6 @@ from . import utils
 from .chatio import ChatIO
 
 
-
 class FileXfer(ChatIO):
     """FileXfer 2.0 - For file transfer, sending and receiving."""
 
@@ -14,7 +13,7 @@ class FileXfer(ChatIO):
 
     def sender_prompt(self, path=''):
         while not path:
-            
+
             # Get filepath and filesize.
             path, filesize = self._get_file_info(path)
 
@@ -23,7 +22,7 @@ class FileXfer(ChatIO):
 
             print(f'OK! Found: {path} | {filesize}bytes')
         return path, filesize
-    
+
     def user_prompt(self, sock, user=''):
         while not user:
 
@@ -49,7 +48,6 @@ class FileXfer(ChatIO):
         # TODO: Make so it routes only to Recip!
         self.pack_n_send(sock, 'F', msg)
 
-
     def _get_file_info(self, path=''):
         """Validate if selected file exists, and get filesize.
 
@@ -60,7 +58,7 @@ class FileXfer(ChatIO):
             path: (str or path??) a path to an existing file.
             filesize: (int) bytes of file at path
         """
-        
+
         filesize = None
 
         print("-=- Send file to recipient (or type cancel).")
@@ -83,7 +81,7 @@ class FileXfer(ChatIO):
 
     def get_username(self, sock, user=''):
         """ Returns valid recipient for file send."""
-        
+
         while not user:
             user = input('-=- Send to >> @')
 
@@ -92,7 +90,7 @@ class FileXfer(ChatIO):
                 break
 
             self.pack_n_send(sock, 'U', user)
-            
+
         return user
 
     def _user_did_cancel(self, inp_str):
@@ -106,31 +104,20 @@ class FileXfer(ChatIO):
             return False
 
     def file_xfer(self, sock, path, filesize, recip=''):
+
+        file_info = f'{str(filesize)}::{path}'
+
         try:
             with open(path, 'rb') as f:
-                self.pack_n_send(sock, 'X', str(filesize))
+                self.pack_n_send(sock, 'X', str(file_info))
                 sock.sendfile(f, 0)
         except:
             print('Unknown exception. I dunno whut u did.')
 
-    def write_to_path(self, chunk, path):
-        # Dynamically set socket size.
+    def new_path(self, path):
         main, ext = utils.split_path_ext(path)
-        # Open socket
-        print("Receiving dawg!")
+
         if os.path.exists(path):
-            path = f"{main}(1).{ext}"
+            path = f"{main}_copy.{ext}"
 
-        with open(path, 'wb') as f:
-            f.write(chunk)
-
-    
-
-    #### SERVER METHODS ###
-
-    # def waiting_for_accept(self, client_cnxn, user):
-        # """Checks if user exists in user dict."""
-
-        # EXISTS_MSG = '-=- Waiting for user to accept.'
-
-        # return 
+        return path
