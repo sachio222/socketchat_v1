@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-"""Encryptochat 2.0
-"""
+"""Encryptochat 2.0"""
 
 import os
 import sys
@@ -13,7 +12,6 @@ from chatutils.chatio import ChatIO
 
 
 class Client(ChatIO):
-
     def __init__(self):
         super(Client, self).__init__()
         self.message_type = 'M'
@@ -23,13 +21,12 @@ class Client(ChatIO):
 
     #===================== SENDING METHODS =====================#
     def sender(self):
-        #0
         """Accepts user input, checks type, and begins sending to recip.
 
-        Accepts input, and checks if it's a command. If it's prefixed with a '/'
-                Then it is routed to the inp_ctrl_handler where different
-                controls are mapped. If it doesn't begin with '/', it's treated
-                as a generic message. 
+        Accepts input, and checks if it's a command. If it's prefixed with a
+        '/'. Then it is routed to the inp_ctrl_handler where different
+        controls are mapped. If it doesn't begin with '/', it's treated as a
+        generic message. 
         """
         while True:
             self.msg = input('')
@@ -46,7 +43,6 @@ class Client(ChatIO):
             self.message_type = 'M'  # Always reset to default.
 
     def inp_ctrl_handler(self, msg):
-        #0
         """Sorts through input control messages and calls controller funcs."""
         if type(msg) == bytes:
             msg.decode()
@@ -60,7 +56,7 @@ class Client(ChatIO):
             # For sending file. Call send dialog.
             self.path, self.filesize = xfer.sender_prompt()
             if self.path:
-                user = xfer.user_prompt(serv_sock)
+                xfer.user_prompt(serv_sock)
 
         else:
             print('-!- Command not recognized.')
@@ -206,7 +202,6 @@ class Client(ChatIO):
         self.t2 = Thread(target=self.sender)
         self.t1.start()
         self.t2.start()
-        self.lock = Lock()
 
 
 if __name__ == "__main__":
