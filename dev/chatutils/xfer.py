@@ -26,7 +26,7 @@ class FileXfer(ChatIO):
     def user_prompt(self, sock, user=''):
         while not user:
 
-            user = self._get_username(sock, user)
+            user = self.get_username(sock, user)
 
             if not user:
                 break
@@ -43,7 +43,7 @@ class FileXfer(ChatIO):
 
         print('Here is your prompt to accept.')
 
-    def _get_file_info(self, path):
+    def _get_file_info(self, path='image.jpg'):
         """Validate if selected file exists, and get filesize.
 
         Input:
@@ -74,7 +74,7 @@ class FileXfer(ChatIO):
 
         return path, filesize
 
-    def _get_username(self, sock, user=''):
+    def get_username(self, sock, user=''):
         """ Returns valid recipient for file send."""
         
         while not user:

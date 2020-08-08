@@ -64,12 +64,16 @@ class Server(ChatIO):
             self.unpack_msg(client_cnxn)
 
         # U-type handler
-        if data == 85: # 85 = U
+        if data == b'U': # 85 = U
             self._serv_u_hndlr(client_cnxn)
 
         else:
             # Reattach prefix before sending to server.
-            data = data + client_cnxn.recv
+            print('data is', data)
+            buff_text = client_cnxn.recv(4096)
+            print('buffer text is', buff_text)
+            data = data + buff_text
+            print('combined they are', data)
             for sock in sockets:
                 if sockets[sock] != sockets[client_cnxn]:
                     # print(sock)
@@ -83,16 +87,21 @@ class Server(ChatIO):
             print('>> ', data)
 
     def _serv_u_hndlr(self, sock):
-        """ handles user requests"""
+        """ handles user requests
+        If U-type is received from sender, initiate this method.
+        1 .check if user is here. if not, send new prompt.
+        
+        """
 
         username = self.unpack_msg(sock)
+        print('username is', username)
 
         # Check for address.
-        user_addr = self.lookup_user(sock, username)
-        print(user_addr)
+        match, user_addr = self.lookup_user(sock, username)
+        print('address is', user_addr)
 
         # Send U type to sender.
-        self.pack_n_send(sock, 'U', user_addr)
+        self.pack_n_send(sock, 'U', str(match))
 
 
 
@@ -124,7 +133,8 @@ class Server(ChatIO):
             match: (bool) True if user found
             user_addr: (str) ip:port of user.
         """
-        user_addr = None
+        match = False
+        user_addr = ''
 
         try:
             user_query = user_query.decode()
@@ -136,16 +146,18 @@ class Server(ChatIO):
 
                 if nick == user_query:
                     print(f'Found {nick}')
+                    match = True
                     user_addr = addr
                     print(f'recip-addy: {user_addr}')
                     
                     break
 
                 else:
+                    match = False
                     print(f'{user_query} not found.') 
         
 
-        return user_addr
+        return match, user_addr
 
 
     def init_client_data(self, sock):
