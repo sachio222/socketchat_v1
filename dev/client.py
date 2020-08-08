@@ -56,12 +56,14 @@ class Client(ChatIO):
             # Send as controller file to server and recipient.
             # self.pack_n_send(serv_sock, 'C', '/sendfile')
 
-            path, user = xfer.sender_prompt()
+            path = xfer.sender_prompt()
+            user = xfer.user_prompt(serv_sock)
 
             # For username lookup.
             # Send U-type message to server with user as message.
             if path and user:
-                self.pack_n_send(serv_sock, 'U', user)
+                # Send U flag.
+                serv_sock.send(b'U')
 
 
         else:
@@ -172,7 +174,12 @@ class Client(ChatIO):
 
         """
 
-        print('YAY user found, do what you want. ')
+        data = unpack_msg
+        print(data)
+        if not data:
+            print('run get username again')
+        else:
+            print('user found.')    
 
 
         # user_exists = self.unpack_msg(serv_sock).decode()
