@@ -154,11 +154,10 @@ class Client(ChatIO):
         # Answer to prompt from F handler.
         recip_choice = self.unpack_msg(serv_sock).decode()
 
-        print("recip choice is: ", recip_choice)
-
         # Resend if choice is nonsense.
-        if recip_choice.lower() != 'y' or recip_choice.lower() != 'n':
+        if recip_choice.lower() != 'y' and recip_choice.lower() != 'n':
             self.pack_n_send(serv_sock,'F', 'Choice must be Y or N. Try again...')
+
         elif recip_choice.lower() == 'y':
             # Sender
             print("Sending file...")
@@ -174,9 +173,11 @@ class Client(ChatIO):
         """File sender. Transfer handler."""
         
         filesize = xfer.unpack_msg(serv_sock)
-        chunk = serv_sock.recv(BFFR)
+        print(filesize)
         
-        xfer.write_to_path(chunk, 'file(2).txt')
+        # chunk = serv_sock.recv(BFFR)
+        
+        # xfer.write_to_path(chunk, 'file(2).txt')
         # bytes_recd = len(chunk)
 
         # with open('image[2].jpg', 'wb') as f:
