@@ -56,8 +56,12 @@ class Client(ChatIO):
             # For sending file. Call send dialog.
             path = None
 
+            # Send as controller file to server and recipient.
             self.pack_n_send(serv_sock, 'C', '/sendfile')
-            path, user= xfer.sender_prompts()
+            path, user = xfer.sender_prompts(serv_sock)
+
+            # For username lookup.
+            # Send U-type message to server with user as message.
             self.pack_n_send(serv_sock, 'U', user)
 
 
@@ -158,20 +162,29 @@ class Client(ChatIO):
             self.pack_n_send(serv_sock, 'M', '-=- Transfer Cancelled.')
 
     def _u_hndlr(self):
-        """Receives server response from user lookup"""
+        """Receives server response from user lookup.
+        
+        After the server looks up a user, it sends its response as a U-type.
+        The U type message either prompts the recipient if the exist, or asks
+        the sender to re-enter their user choice.
 
-        user_exists = self.unpack_msg(serv_sock).decode()
-        print("-=- Checking recipient...")
-        print(user_exists)
+        """
 
-        if user_exists:
-            # filesize = self.get_filesize('image.jpg', serv_sock)
-            filesize = 78404
-            msg = f"{filesize}"
-            self.pack_n_send(serv_sock, 'F', msg)
-        else:
-            print("User does not exist. Try again or type 'cancel'")
-            return
+        print(self.unpack_msg(serv_sock).decode())
+        
+
+        # user_exists = self.unpack_msg(serv_sock).decode()
+        # print("-=- Checking recipient...")
+        # print(f'user exists: {user_exists}')
+
+        # if user_exists:
+        #     # filesize = self.get_filesize('image.jpg', serv_sock)
+        #     filesize = 78404
+        #     msg = f"{filesize}"
+        #     self.pack_n_send(serv_sock, 'F', msg)
+        # else:
+        #     print("User does not exist. Try again or type 'cancel'")
+        #     return
 
     def _x_hndlr(self):
         """File sender. Transfer handler."""
