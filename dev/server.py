@@ -9,7 +9,6 @@ import chatutils.xfer as xfer
 import chatutils.utils as utils
 from chatutils.chatio import ChatIO
 
-BFFR = 4096
 sockets = {}
 nicks_by_sock = {}
 addrs_by_nick = {}
@@ -19,6 +18,7 @@ sox = {}
 class Server(ChatIO):
     def __init__(self):
         super(Server, self).__init__()
+        self.BFFR = 1
 
 
     def accepting(self):
@@ -37,7 +37,7 @@ class Server(ChatIO):
 
         # Start listening.
         while True:
-            data = client_cnxn.recv(BFFR)  # Receive data as chunks.
+            data = client_cnxn.recv(self.BFFR)  # Receive data as chunks.
 
             if not data:
                 #TODO: Run through connected sockets, clean up list.
@@ -57,29 +57,18 @@ class Server(ChatIO):
         # Server client communication codes.
 
         # Send confirm dialog to recip if user is sending file.
-        if data[0] == "/".encode():
+        if data == "/".encode():
             print('controller')
 
             # Drain socket of controller message so it doesn't print.
             self.unpack_msg(client_cnxn)
 
         # U-type handler
-        if data[0] == 85: # 85 = U
-            
-            user_bytes = self.remove_pfx(data) # Clean already recv'd data.
-
-            # Check for user.
-            user_exists, _ = self.lookup_user(client_cnxn, user_bytes)
-
-            # Send U type to sender.
-            if not user_exists:
-                prompt = '-=- Send to >> @'
-                self.pack_n_send(client_cnxn, 'V', prompt)
-            else:
-                self.pack_n_send(client_cnxn, 'U', str(user_exists))
-
+        if data == 85: # 85 = U
+            self._serv_u_hndlr(client_cnxn)
 
         else:
+            data = self.unpack_msg(client_cnxn)
             for sock in sockets:
                 if sockets[sock] != sockets[client_cnxn]:
                     # print(sock)
@@ -91,6 +80,17 @@ class Server(ChatIO):
         
         # General print to server.
             print('>> ', data)
+
+    def _serv_u_hndlr(self, sock):
+        """ handles user requests"""
+
+        username = self.unpack_msg(sock)
+
+        # Check for address.
+        user_addr = self.lookup_user(sock, username)
+
+        # Send U type to sender.
+        self.pack_n_send(sock, 'U', user_addr)
 
 
 
@@ -122,7 +122,6 @@ class Server(ChatIO):
             match: (bool) True if user found
             user_addr: (str) ip:port of user.
         """
-        match = False
         user_addr = None
 
         try:
@@ -135,7 +134,6 @@ class Server(ChatIO):
 
                 if nick == user_query:
                     print(f'Found {nick}')
-                    match = True
                     user_addr = addr
                     print(f'recip-addy: {user_addr}')
                     
@@ -144,8 +142,8 @@ class Server(ChatIO):
                 else:
                     print(f'{user_query} not found.') 
         
-        print(f'match: {match}')
-        return match, user_addr
+
+        return user_addr
 
 
     def init_client_data(self, sock):
