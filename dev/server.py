@@ -69,11 +69,11 @@ class Server(ChatIO):
 
         else:
             # Reattach prefix before sending to server.
-            print('data is', data)
+            # print('data is', data)
             buff_text = client_cnxn.recv(4096)
-            print('buffer text is', buff_text)
+            # print('buffer text is', buff_text)
             data = data + buff_text
-            print('combined they are', data)
+            # print('combined they are', data)
             for sock in sockets:
                 if sockets[sock] != sockets[client_cnxn]:
                     # print(sock)
@@ -84,7 +84,7 @@ class Server(ChatIO):
                         pass
         
         # General print to server.
-            print('>> ', data)
+            print('>> ', data.decode())
 
     def _serv_u_hndlr(self, sock):
         """ handles user requests
@@ -92,41 +92,21 @@ class Server(ChatIO):
         1 .check if user is here. if not, send new prompt.
         
         """
-
         username = self.unpack_msg(sock)
-
-        if username.decode() != 'cancel':
-            print('username is', username)
+        print(username)
+        if username != b'cancel':
+            print('Looking up: ', username)
 
             # Check for address.
             match, user_addr = self.lookup_user(sock, username)
-            print('address is', user_addr)
+            if match:
+                print('Found at: ', user_addr)
 
             # Send U type to sender.
             self.pack_n_send(sock, 'U', str(match))
         else:
             cancel_msg = 'x-x Send file cancelled. Continue chatting.'
             self.pack_n_send(sock, 'M', cancel_msg)
-
-       
-
-
-
-    # def file_confirm_prompt(self, client_cnxn, data):
-    #     """Checks if user exists in user dict."""
-    
-    #     data = data[5:]  # Remove prefixes.
-    #     user_exists, user_addr = self.lookup_user(client_cnxn, data)
-
-    #     if user_exists:
-    #         EXISTS_MSG = '-=- Waiting for user to accept.'
-    #         data = EXISTS_MSG
-    #         user_addr = user_addr
-    #     else:
-    #         data = ''
-
-    #     return data
-
 
     def lookup_user(self, sock, user_query):
         #YUP
@@ -163,9 +143,7 @@ class Server(ChatIO):
                     match = False
                     print(f'{user_query} not found.') 
         
-
         return match, user_addr
-
 
     def init_client_data(self, sock):
         """Sets nick and addr of user."""
@@ -192,10 +170,9 @@ class Server(ChatIO):
     def start(self):
         Thread(target=self.accepting).start()
 
-    # def recv_pkt(self, client_cnxn, data, n):
-    #     return int(data[:n])
 
 if __name__ == "__main__":
+    # TODO: Add inputs.
 
     server = Server()
 

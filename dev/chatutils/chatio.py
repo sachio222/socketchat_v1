@@ -26,7 +26,7 @@ class ChatIO():
             msg[0] - Message type
             msg[1:4] - Message length
             msg[5:] - Message
-        """
+"""
 
         len_pfx = len(msg)
         len_pfx = str(len_pfx).rjust(self.LEN_PFX_LEN, '0')
