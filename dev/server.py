@@ -68,7 +68,8 @@ class Server(ChatIO):
             self._serv_u_hndlr(client_cnxn)
 
         else:
-            data = self.unpack_msg(client_cnxn)
+            # Reattach prefix before sending to server.
+            data = data + client_cnxn.recv
             for sock in sockets:
                 if sockets[sock] != sockets[client_cnxn]:
                     # print(sock)
@@ -88,6 +89,7 @@ class Server(ChatIO):
 
         # Check for address.
         user_addr = self.lookup_user(sock, username)
+        print(user_addr)
 
         # Send U type to sender.
         self.pack_n_send(sock, 'U', user_addr)

@@ -174,7 +174,7 @@ class Client(ChatIO):
 
         """
 
-        data = unpack_msg
+        data = self.unpack_msg(sock)
         print(data)
         if not data:
             print('run get username again')
