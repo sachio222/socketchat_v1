@@ -5,7 +5,7 @@
 import os
 import sys
 import socket
-from threading import Thread
+from threading import Thread, Lock
 
 from chatutils import utils
 from chatutils.xfer import FileXfer
@@ -16,6 +16,8 @@ class Client(ChatIO):
 
     def __init__(self):
         super(Client, self).__init__()
+        self.message_type = 'M'
+        self.msg = ''
 
     #===================== SENDING METHODS =====================#
     def sender(self):
@@ -28,16 +30,16 @@ class Client(ChatIO):
                 as a generic message. 
         """
         while True:
-            msg = input('')
-            if msg:
-                if msg[0] == '/':
+            self.msg = input('')
+            if self.msg:
+                if self.msg[0] == '/':
                     typ_pfx = 'C'
-                    self.inp_ctrl_handler(msg)
+                    self.inp_ctrl_handler(self.msg)
                 else:
-                    typ_pfx = 'M'
-                    self.pack_n_send(serv_sock, typ_pfx, msg)
+                    typ_pfx = self.message_type
+                    self.pack_n_send(serv_sock, typ_pfx, self.msg)
             else:
-                msg = ''
+                self.msg = ''
 
 
     def inp_ctrl_handler(self, msg):
@@ -61,9 +63,10 @@ class Client(ChatIO):
 
             # For username lookup.
             # Send U-type message to server with user as message.
-            if path and user:
+            # if path and user:
+            #     path
                 # Send U flag.
-                serv_sock.send(b'U')
+                # serv_sock.send(b'T')
 
 
         else:
@@ -173,14 +176,15 @@ class Client(ChatIO):
         the sender to re-enter their user choice.
 
         """
+        user_exists = self.unpack_msg(serv_sock)
 
-        data = self.unpack_msg(sock)
-        print(data)
-        if not data:
-            print('run get username again')
-        else:
-            print('user found.')    
+        if user_exists == "False":
+            print("didn't find em. Try again.")
+            self.message_type = 'U'
 
+        if user_exists == "True":
+            print('we found em go do next thing.')
+            self.message_type = 'M'
 
         # user_exists = self.unpack_msg(serv_sock).decode()
         # print("-=- Checking recipient...")
@@ -218,6 +222,7 @@ class Client(ChatIO):
         self.t2 = Thread(target=self.sender)
         self.t1.start()
         self.t2.start()
+        self.lock = Lock()
 
 
 if __name__ == "__main__":
