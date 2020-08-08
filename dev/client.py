@@ -30,7 +30,6 @@ class Client(ChatIO):
         while True:
             msg = input('')
             if msg:
-                # breakpoint()
                 if msg[0] == '/':
                     typ_pfx = 'C'
                     self.inp_ctrl_handler(msg)
@@ -54,16 +53,15 @@ class Client(ChatIO):
             
         elif msg == '/sendfile':
             # For sending file. Call send dialog.
-            path = None
-
             # Send as controller file to server and recipient.
             # self.pack_n_send(serv_sock, 'C', '/sendfile')
 
-            path, user = xfer.sender_prompts(serv_sock)
+            path, user = xfer.sender_prompt()
 
             # For username lookup.
             # Send U-type message to server with user as message.
-            self.pack_n_send(serv_sock, 'U', user)
+            if path and user:
+                self.pack_n_send(serv_sock, 'U', user)
 
 
         else:
@@ -105,8 +103,11 @@ class Client(ChatIO):
             # For dialog messages for file sending.
             self._a_hndlr()
         elif typ_pfx == 'U':
-            # Does user exist?
+            # User Found
             self._u_hndlr()
+        elif typ_pfx == 'V':
+            # User Found
+            self._v_hndlr()
         elif typ_pfx == 'X':
             # Transfer file.
             self._x_hndlr()
@@ -171,14 +172,8 @@ class Client(ChatIO):
 
         """
 
-        user_found = self.unpack_msg(serv_sock).decode()
-        if user_found == "False":
-            user = input('-=- Send to >> @')
-            self.pack_n_send(serv_sock, 'U', user)
+        print('YAY user found, do what you want. ')
 
-        else:
-            xfer.recip_prompt(serv_sock)
-        
 
         # user_exists = self.unpack_msg(serv_sock).decode()
         # print("-=- Checking recipient...")
@@ -192,6 +187,10 @@ class Client(ChatIO):
         # else:
         #     print("User does not exist. Try again or type 'cancel'")
         #     return
+
+    def _v_hndlr(self):
+        pass
+
 
     def _x_hndlr(self):
         """File sender. Transfer handler."""

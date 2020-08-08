@@ -1,4 +1,5 @@
 import os
+import time
 from . import utils
 from .chatio import ChatIO
 
@@ -11,22 +12,16 @@ class FileXfer(ChatIO):
         super(FileXfer, self).__init__()
         self.filesize = None
 
-    def sender_prompts(self, sock, path='', user=''):
-        while True:
+    def sender_prompt(self, path=''):
+        while not path:
             
             # Get filepath and filesize.
             path, self.filesize = self._get_file_info(path)
+
             if not path:
                 break
-            
-            # Get user.
-            user = self._get_username(sock)
-            if not user:
-                break
-            
-            break
 
-        return path, user
+        return path
 
     def recip_prompt(self, sock, filename=None, filesize=None, user=None):
         """Sends filename and filesize. Prompts user to accept file transfer.
@@ -69,9 +64,9 @@ class FileXfer(ChatIO):
 
         return path, filesize
 
-    def _get_username(self, sock, user=''):
+    def _get_username(self, user=''):
         """ Returns valid recipient for file send."""
-
+        
         while not user:
             user = input('-=- Send to >> @')
 
@@ -79,8 +74,6 @@ class FileXfer(ChatIO):
                 user = ''
                 break
             
-            print(f'-=- Looking up {user}...')
-
         return user
 
     def _user_did_cancel(self, inp_str):
