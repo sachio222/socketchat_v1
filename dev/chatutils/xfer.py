@@ -10,18 +10,25 @@ class FileXfer(ChatIO):
     def __init__(self):
         super(FileXfer, self).__init__()
 
-    def sender_prompts(self, path='', user=''):
+    def sender_prompts(self, sock, path='', user=''):
         while True:
+            
+            # Get filepath.
             path = self._get_path(path)
             if not path:
                 break
-            user = self._get_user(user)
+            
+            # Get user.
+            user = self._get_username(sock, user)
             if not user:
                 break
-
+            
             break
         return path, user
 
+    def recip_prompt(self, sock, path='', filesize=''):
+        pass
+    
     def _get_path(self, path):
         """Validate if selected file exists. 
 
@@ -32,7 +39,7 @@ class FileXfer(ChatIO):
             path: (str or path??) a path to an existing file.
         """
 
-        print("-=- Send file to recipient. (Type 'cancel' at any time to return to chat.)")
+        print("-=- Send file to recipient (or type cancel).")
         while not os.path.exists(path):
             path = input("-=- Input filepath >> ")
 
@@ -49,21 +56,17 @@ class FileXfer(ChatIO):
 
         return path
 
-    def _get_user(self, nick):
+    def _get_username(self, sock, user):
         """ Returns valid recipient for file send."""
 
-        ### TODO: Finish this.
+        while not user:
+            user = input('-=- Send to >> @')
 
-        while not self._valid_recip(nick):
-            
-            user = input('-=- Send to: @')
-            
-            if self._user_did_cancel(nick):
-                nick = None
+            if self._user_did_cancel(user):
+                user = ''
                 break
             
-            elif not self._valid_recip(nick):
-                print("x-x Maybe pick someone in this room?")
+            print(f'-=- Looking up {user}...')
 
         return user
 
@@ -87,3 +90,14 @@ class FileXfer(ChatIO):
 
         with open(path, 'wb') as f:
             f.write(chunk)
+
+    
+
+    #### SERVER METHODS ###
+
+    def waiting_for_accept(client_cnxn, user):
+        """Checks if user exists in user dict."""
+
+        EXISTS_MSG = '-=- Waiting for user to accept.'
+
+        return 
