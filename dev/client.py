@@ -18,6 +18,8 @@ class Client(ChatIO):
         super(Client, self).__init__()
         self.message_type = 'M'
         self.msg = ''
+        self.filesize = ''
+        self.path = ''
 
     #===================== SENDING METHODS =====================#
     def sender(self):
@@ -53,21 +55,11 @@ class Client(ChatIO):
             path = 'config/helptxt.txt'
             utils.print_from_file(path)
             
-        elif msg == '/sendfile':
+        elif msg == '/sendfile' or msg == '/sf':
             # For sending file. Call send dialog.
-            # Send as controller file to server and recipient.
-            # self.pack_n_send(serv_sock, 'C', '/sendfile')
-
-            path = xfer.sender_prompt()
-            user = xfer.user_prompt(serv_sock)
-
-            # For username lookup.
-            # Send U-type message to server with user as message.
-            # if path and user:
-            #     path
-                # Send U flag.
-                # serv_sock.send(b'T')
-
+            path, self.filesize = xfer.sender_prompt()
+            if path:
+                user = xfer.user_prompt(serv_sock)
 
         else:
             print('-!- Command not recognized.')
@@ -126,24 +118,22 @@ class Client(ChatIO):
         self.print_message(trim_msg)
 
     def _f_hndlr(self):
-        #0
         """File Recipient. Prompts to accept or reject. Sends response."""
 
         # Incoming filename and filesize.
-        incoming_f_sz = self.unpack_msg(serv_sock)
-        print(incoming_f_sz.decode())
-        print('-?- Do you want to accept this file? (Y/N)'
-             )  #  TODO <-- come from server
-        choice = input('>>')
+        incoming_prompt = self.unpack_msg(serv_sock)
+        print(incoming_prompt.decode())
+          #  TODO <-- come from server
+        self.message_type = "A"
         # print("Sending here, ths is fine")
-        self.pack_n_send(serv_sock, 'A', choice)
+        # self.pack_n_send(serv_sock, 'A', choice)
 
         # Accept file
-        if choice == 'n':
-            pass
-        elif choice == 'y':
-            # Bring in the file!!
-            pass
+        # if choice == 'n':
+        #     pass
+        # elif choice == 'y':
+        #     # Bring in the file!!
+        #     pass
 
     def _c_hndlr(self):
         #0
@@ -152,21 +142,24 @@ class Client(ChatIO):
         trim_msg = self.unpack_msg(serv_sock)
 
     def _a_hndlr(self):
-        #0
         """Recipient Acceptance. Yes or no"""
 
         choice = self.unpack_msg(serv_sock)
         print(choice)
-        print("sending")
-        if choice.decode().lower() == 'y':
-            print('sending')
-            with open('image.jpg', 'rb') as f:
-                # Sends message to send file.
-                serv_sock.send(b'X')
-                serv_sock.sendfile(f, 0)
-        elif choice.lower() == 'n':
-                # Sends message that file transfer is over.
-            self.pack_n_send(serv_sock, 'M', '-=- Transfer Cancelled.')
+        if choice.lower() != 'y' or choice.lower() != 'n':
+            self.pack_n_send(serv_sock,'F', 'Choice must be Y or N. Try again...')
+        
+        
+        
+        # if choice.decode().lower() == 'y':
+        #     print('sending')
+        #     with open('image.jpg', 'rb') as f:
+        #         # Sends message to send file.
+        #         serv_sock.send(b'X')
+        #         serv_sock.sendfile(f, 0)
+        # elif choice.lower() == 'n':
+        #         # Sends message that file transfer is over.
+        #     self.pack_n_send(serv_sock, 'M', '-=- Transfer Cancelled.')
 
     def _u_hndlr(self):
         """Receives server response from user lookup.
@@ -176,15 +169,19 @@ class Client(ChatIO):
         the sender to re-enter their user choice.
 
         """
-        user_exists = self.unpack_msg(serv_sock)
+
+        user_exists = self.unpack_msg(serv_sock).decode()
 
         if user_exists == "False":
-            print("didn't find em. Try again.")
+            print('-!- They aint here. Try again. \n-=- Send to >> @', end='')
             self.message_type = 'U'
 
         if user_exists == "True":
-            print('we found em go do next thing.')
-            self.message_type = 'M'
+            print('OK! Waiting for user to accept...')
+            # msg = f"{self.filesize}"
+            msg = '-?- Do you want to accept this file? (Y/N)'
+            self.pack_n_send(serv_sock, 'F', msg)
+            self.message_type = 'M' # Reset message type.
 
         # user_exists = self.unpack_msg(serv_sock).decode()
         # print("-=- Checking recipient...")
@@ -193,8 +190,6 @@ class Client(ChatIO):
         # if user_exists:
         #     # filesize = self.get_filesize('image.jpg', serv_sock)
         #     filesize = 78404
-        #     msg = f"{filesize}"
-        #     self.pack_n_send(serv_sock, 'F', msg)
         # else:
         #     print("User does not exist. Try again or type 'cancel'")
         #     return
