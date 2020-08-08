@@ -16,12 +16,13 @@ class FileXfer(ChatIO):
         while not path:
             
             # Get filepath and filesize.
-            path, self.filesize = self._get_file_info(path)
+            path, filesize = self._get_file_info(path)
 
             if not path:
                 break
 
-        return path
+            print(f'OK! Found: {path} | {filesize}bytes')
+        return path, filesize
     
     def user_prompt(self, sock, user=''):
         while not user:
@@ -43,7 +44,7 @@ class FileXfer(ChatIO):
 
         print('Here is your prompt to accept.')
 
-    def _get_file_info(self, path='image.jpg'):
+    def _get_file_info(self, path=''):
         """Validate if selected file exists, and get filesize.
 
         Input:
@@ -89,7 +90,7 @@ class FileXfer(ChatIO):
         return user
 
     def _user_did_cancel(self, inp_str):
-        """Returns true if inp_str is canceled, and shows message. """
+        """Returns true if inp_str is cancelled, and shows message. """
 
         if inp_str.lower() == 'cancel':
             print('x-x Send file cancelled. Continue chatting.')

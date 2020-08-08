@@ -94,14 +94,21 @@ class Server(ChatIO):
         """
 
         username = self.unpack_msg(sock)
-        print('username is', username)
 
-        # Check for address.
-        match, user_addr = self.lookup_user(sock, username)
-        print('address is', user_addr)
+        if username.decode() != 'cancel':
+            print('username is', username)
 
-        # Send U type to sender.
-        self.pack_n_send(sock, 'U', str(match))
+            # Check for address.
+            match, user_addr = self.lookup_user(sock, username)
+            print('address is', user_addr)
+
+            # Send U type to sender.
+            self.pack_n_send(sock, 'U', str(match))
+        else:
+            cancel_msg = 'x-x Send file cancelled. Continue chatting.'
+            self.pack_n_send(sock, 'M', cancel_msg)
+
+       
 
 
 
