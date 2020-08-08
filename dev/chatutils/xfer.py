@@ -9,35 +9,47 @@ class FileXfer(ChatIO):
 
     def __init__(self):
         super(FileXfer, self).__init__()
+        self.filesize = None
 
     def sender_prompts(self, sock, path='', user=''):
         while True:
             
-            # Get filepath.
-            path = self._get_path(path)
+            # Get filepath and filesize.
+            path, self.filesize = self._get_file_info(path)
             if not path:
                 break
             
             # Get user.
-            user = self._get_username(sock, user)
+            user = self._get_username(sock)
             if not user:
                 break
             
             break
+
         return path, user
 
-    def recip_prompt(self, sock, path='', filesize=''):
-        pass
-    
-    def _get_path(self, path):
-        """Validate if selected file exists. 
+    def recip_prompt(self, sock, filename=None, filesize=None, user=None):
+        """Sends filename and filesize. Prompts user to accept file transfer.
+        
+        Args:
+            filename: (str) The name of the incoming file.
+            filesize: (int) Size of incoming file in bytes.
+        """
+
+        print('Here is your prompt to accept.')
+
+    def _get_file_info(self, path):
+        """Validate if selected file exists, and get filesize.
 
         Input:
             path: (string) a file location.
 
         Returns:
             path: (str or path??) a path to an existing file.
+            filesize: (int) bytes of file at path
         """
+        
+        filesize = None
 
         print("-=- Send file to recipient (or type cancel).")
         while not os.path.exists(path):
@@ -53,10 +65,11 @@ class FileXfer(ChatIO):
             else:
                 # remove absolute path if there is one
                 path = os.path.basename(path)
+                filesize = os.path.getsize(path)
 
-        return path
+        return path, filesize
 
-    def _get_username(self, sock, user):
+    def _get_username(self, sock, user=''):
         """ Returns valid recipient for file send."""
 
         while not user:
@@ -95,9 +108,9 @@ class FileXfer(ChatIO):
 
     #### SERVER METHODS ###
 
-    def waiting_for_accept(client_cnxn, user):
-        """Checks if user exists in user dict."""
+    # def waiting_for_accept(self, client_cnxn, user):
+        # """Checks if user exists in user dict."""
 
-        EXISTS_MSG = '-=- Waiting for user to accept.'
+        # EXISTS_MSG = '-=- Waiting for user to accept.'
 
-        return 
+        # return 
